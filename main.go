@@ -17,12 +17,22 @@ type work struct {
 	Chaps  []string //`json:"ChaptersTitles,omitempty"`
 }
 
+type id struct {
+	WorkID    string
+	ChapterID string
+}
+
+type ids struct {
+	works []id
+}
+
 func ParseWorks(wID, cID string) { //(ChaptersTitles, WorkTitle, WorkAuthor string, WorkChapters []string) {
-	//var sWork work
+	var sWork work
 
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate?view_adult=true", wID)
 	var title string
 	var author string
+	//var cIDs []string
 	c := colly.NewCollector(
 		colly.CacheDir("./cache"),
 	)
@@ -42,11 +52,36 @@ func ParseWorks(wID, cID string) { //(ChaptersTitles, WorkTitle, WorkAuthor stri
 		author = e.ChildText("a:nth-child(2)")
 	})
 
+	c.OnHTML("#main > ol", func(e *colly.HTMLElement) {
+		cIDs := e.ChildAttrs("a", "href")
+		chapsText := []string{}
+		e.ForEach("a[href]", func(_ int, el *colly.HTMLElement) {
+			chapsText = append(chapsText, el.Text)
+			//fmt.Println(el.Text)
+		})
+
+		cTitle, chaps := FindChapters(cID, cIDs, chapsText)
+		//fmt.Println(chaps[0])
+		//fmt.Println(FindChapters(cID, cIDs, chapsText))
+		sWork.Author = author
+		sWork.Title = title
+		sWork.wID = wID
+		sWork.cID = cID
+		sWork.cTitle = cTitle
+		sWork.Chaps = chaps
+		//fmt.Println(chaps)
+		//fmt.Printf("Title is %s Chapters title is %s\n", title, cTitle)
+	})
+
 	c.Visit(url)
 	c.Wait()
-	fmt.Println(title, author)
+	//fmt.Println(sWork.Chaps)
+	fmt.Println(sWork.cTitle, sWork.Title, sWork.Author, sWork.Chaps) //, cIDs)
 }
 func main() {
+	//works := ReadFile()
+	//fmt.Println(works)
 
-	ParseWorks("4854050", "")
+	ParseWorks("11593719", "")
+	//ParseWorks("4854050", "")
 }
