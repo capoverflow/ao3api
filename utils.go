@@ -1,4 +1,4 @@
-package neoao3api
+package ao3
 
 import (
 	"bufio"
