@@ -1,5 +1,6 @@
-//package neogoapi
-package main
+package neogoapi
+
+//package main
 
 import (
 	"fmt"
@@ -26,7 +27,7 @@ type ids struct {
 	works []id
 }
 
-func ParseWorks(wID, cID string) { //(ChaptersTitles, WorkTitle, WorkAuthor string, WorkChapters []string) {
+func ParseWorks(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, WorkChapters []string) {
 	var sWork work
 
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate?view_adult=true", wID)
@@ -76,12 +77,5 @@ func ParseWorks(wID, cID string) { //(ChaptersTitles, WorkTitle, WorkAuthor stri
 	c.Visit(url)
 	c.Wait()
 	//fmt.Println(sWork.Chaps)
-	fmt.Println(sWork.cTitle, sWork.Title, sWork.Author, sWork.Chaps) //, cIDs)
-}
-func main() {
-	//works := ReadFile()
-	//fmt.Println(works)
-
-	ParseWorks("11593719", "")
-	//ParseWorks("4854050", "")
+	return sWork.cTitle, sWork.Title, sWork.Author, sWork.Chaps
 }

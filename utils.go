@@ -1,4 +1,4 @@
-package main
+package neoao3api
 
 import (
 	"bufio"
