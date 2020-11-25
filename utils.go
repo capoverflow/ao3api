@@ -14,6 +14,7 @@ import (
 //SliceFind search string in slice of string
 func SliceFind(slice []string, val string) (int, bool) {
 	for i, item := range slice {
+
 		if item == val {
 			return i, true
 		}
