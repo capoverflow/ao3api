@@ -1,14 +1,13 @@
 # A small golang api for archive of our own
 
 
-Sample program : 
+## Sample program : 
 ```bash
 cd ~/go/src
 go mod init .
 go mod edit -require gitlab.com/capoverflow/ao3api@develop
 go get -v -t ./...
 
-go run .
 ```
 
 
@@ -25,5 +24,19 @@ func main() {
 	Parser := ao3.ParseWorks
 	fmt.Println(Parser("21116591", "50249441"))
 }
-
 ``` 
+```bash
+go run .
+
+1. The Contrary Corpse Salvage MuffinLance [50249441 50485448 50720243 50831173 51608758 52081273 54160033 54694417 60167875 61226317 61799353 63000286]
+```
+It return the chapters title, the title and the authors and the ids of all chapters.
+
+
+## Roadmap: 
+
+* Adding support for summary (already in master the old api).
+* Numbers of Kudos, Comments, Hits
+* cli client (another project)
+
+
