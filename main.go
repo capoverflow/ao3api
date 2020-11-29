@@ -27,6 +27,18 @@ type ids struct {
 	works []id
 }
 
+type stats struct {
+	Published string
+	Updated   string
+	Words     string
+	Chapters  string
+	Comments  string
+	Kudos     string
+	Bookmarks string
+	Hits      string
+	Summary   string
+}
+
 func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, WorkChapters []string) {
 	var sWork work
 
@@ -79,8 +91,9 @@ func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, WorkC
 	return sWork.cTitle, sWork.Title, sWork.Author, sWork.Chaps
 }
 
-//ParseSummary
-func Summary(wID, cID string) {
+//Info
+func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos, Bookmarks, Hits, Summary string) {
+	var Stats stats
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/chapters/%s", wID, cID)
 	c := colly.NewCollector(
 		colly.CacheDir("./cache"),
@@ -95,13 +108,39 @@ func Summary(wID, cID string) {
 		// Add User Agent
 		Parallelism: 2,
 	})
-	c.OnHTML("div.summary.module", func(e *colly.HTMLElement) {
-		e.ForEach("p", func(_ int, el *colly.HTMLElement) {
-			fmt.Println(el.Text)
+	c.OnHTML("dl.stats", func(e *colly.HTMLElement) {
+		var StatsText []string
+		e.ForEach("dd", func(_ int, el *colly.HTMLElement) {
+			//fmt.Println(el.Text, el.Index)
+			StatsText = append(StatsText, el.Text)
 		})
+		Stats.Published = StatsText[0]
+		Stats.Updated = StatsText[1]
+		Stats.Words = StatsText[2]
+		Stats.Chapters = StatsText[3]
+		Stats.Comments = StatsText[4]
+		Stats.Kudos = StatsText[5]
+		Stats.Bookmarks = StatsText[6]
+		Stats.Hits = StatsText[7]
+		//fmt.Println(Stats)
+
+	})
+
+	c.OnHTML("div.summary.module", func(e *colly.HTMLElement) {
+		var sum []string
+		var Summary string
+		e.ForEach("p", func(_ int, el *colly.HTMLElement) {
+			sum = append(sum, el.Text)
+			//Stats.Summary = el.Text
+		})
+		Summary = fmt.Sprintf("%s %s", sum[0], sum[1])
+		//fmt.Println(len(Summary))
+		//fmt.Println(Summary)
+		Stats.Summary = Summary
 
 	})
 
 	c.Visit(url)
 	c.Wait()
+	return Stats.Published, Stats.Updated, Stats.Words, Stats.Chapters, Stats.Comments, Stats.Kudos, Stats.Bookmarks, Stats.Hits, Stats.Summary
 }
