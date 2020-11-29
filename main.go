@@ -74,7 +74,7 @@ func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, WorkC
 		})
 
 		cTitle, chaps := FindChapters(cID, cIDs, chapsText)
-		fmt.Println(chaps[0])
+		//fmt.Println(chaps[0])
 		//fmt.Println(FindChapters(cID, cIDs, chapsText))
 		sWork.Author = author
 		sWork.Title = title
