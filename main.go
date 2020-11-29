@@ -62,7 +62,7 @@ func ParseWorks(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, 
 		})
 
 		cTitle, chaps := FindChapters(cID, cIDs, chapsText)
-		//fmt.Println(chaps[0])
+		fmt.Println(chaps[0])
 		//fmt.Println(FindChapters(cID, cIDs, chapsText))
 		sWork.Author = author
 		sWork.Title = title
@@ -73,9 +73,32 @@ func ParseWorks(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, 
 		//fmt.Println(chaps)
 		//fmt.Printf("Title is %s Chapters title is %s\n", title, cTitle)
 	})
-
 	c.Visit(url)
 	c.Wait()
 	//fmt.Println(sWork.Chaps)
 	return sWork.cTitle, sWork.Title, sWork.Author, sWork.Chaps
+}
+
+//ParseSummary
+func ParseSummary(wID, cID string) {
+	url := fmt.Sprintf("https://archiveofourown.org/works/%s/chapters/%s", wID, cID)
+	c := colly.NewCollector(
+		colly.CacheDir("./cache"),
+	)
+	c.Limit(&colly.LimitRule{
+		// Filter domains affected by this rule
+		DomainGlob: "*archiveofourown.org/*",
+		// Set a delay between requests to these domains
+		Delay: 5 * time.Second,
+		// Add an additional random delay
+		RandomDelay: 10 * time.Second,
+		// Add User Agent
+		Parallelism: 2,
+	})
+	c.OnHTML("div", func(e *colly.HTMLElement) {
+		fmt.Println(e.Text)
+	})
+
+	c.Visit(url)
+	c.Wait()
 }
