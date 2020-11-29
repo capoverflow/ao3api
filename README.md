@@ -35,7 +35,7 @@ It return the chapters title, the title and the authors and the ids of all chapt
 
 ## Roadmap: 
 
-* Adding support for summary (already in master the old api).
+* Adding support for summary (already in master the old api). WORKING (29-11-2020)
 * Numbers of Kudos, Comments, Hits
 * cli client (another project)
 

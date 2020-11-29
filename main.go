@@ -27,7 +27,7 @@ type ids struct {
 	works []id
 }
 
-func ParseWorks(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, WorkChapters []string) {
+func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, WorkChapters []string) {
 	var sWork work
 
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate?view_adult=true", wID)
@@ -80,7 +80,7 @@ func ParseWorks(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, 
 }
 
 //ParseSummary
-func ParseSummary(wID, cID string) {
+func Summary(wID, cID string) {
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/chapters/%s", wID, cID)
 	c := colly.NewCollector(
 		colly.CacheDir("./cache"),
@@ -95,8 +95,11 @@ func ParseSummary(wID, cID string) {
 		// Add User Agent
 		Parallelism: 2,
 	})
-	c.OnHTML("div", func(e *colly.HTMLElement) {
-		fmt.Println(e.Text)
+	c.OnHTML("div.summary.module", func(e *colly.HTMLElement) {
+		e.ForEach("p", func(_ int, el *colly.HTMLElement) {
+			fmt.Println(el.Text)
+		})
+
 	})
 
 	c.Visit(url)
