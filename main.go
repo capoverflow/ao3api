@@ -70,24 +70,24 @@ func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, WorkC
 		chapsText := []string{}
 		e.ForEach("a[href]", func(_ int, el *colly.HTMLElement) {
 			chapsText = append(chapsText, el.Text)
-			//fmt.Println(el.Text)
+			//log.Println(el.Text)
 		})
 
 		cTitle, chaps := FindChapters(cID, cIDs, chapsText)
-		//fmt.Println(chaps[0])
-		//fmt.Println(FindChapters(cID, cIDs, chapsText))
+		//log.Println(chaps[0])
+		//log.Println(FindChapters(cID, cIDs, chapsText))
 		sWork.Author = author
 		sWork.Title = title
 		sWork.wID = wID
 		sWork.cID = cID
 		sWork.cTitle = cTitle
 		sWork.Chaps = chaps
-		//fmt.Println(chaps)
+		//log.Println(chaps)
 		//fmt.Printf("Title is %s Chapters title is %s\n", title, cTitle)
 	})
 	c.Visit(url)
 	c.Wait()
-	//fmt.Println(sWork.Chaps)
+	//log.Println(sWork.Chaps)
 	return sWork.cTitle, sWork.Title, sWork.Author, sWork.Chaps
 }
 
@@ -111,7 +111,7 @@ func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos
 	c.OnHTML("dl.stats", func(e *colly.HTMLElement) {
 		var StatsText []string
 		e.ForEach("dd", func(_ int, el *colly.HTMLElement) {
-			//fmt.Println(el.Text, el.Index)
+			//log.Println(el.Text, el.Index)
 			StatsText = append(StatsText, el.Text)
 		})
 		Stats.Published = StatsText[0]
@@ -122,7 +122,7 @@ func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos
 		Stats.Kudos = StatsText[5]
 		Stats.Bookmarks = StatsText[6]
 		Stats.Hits = StatsText[7]
-		//fmt.Println(Stats)
+		//log.Println(Stats)
 
 	})
 
@@ -134,8 +134,8 @@ func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos
 			//Stats.Summary = el.Text
 		})
 		Summary = fmt.Sprintf("%s %s", sum[0], sum[1])
-		//fmt.Println(len(Summary))
-		//fmt.Println(Summary)
+		//log.Println(len(Summary))
+		//log.Println(Summary)
 		Stats.Summary = Summary
 
 	})
