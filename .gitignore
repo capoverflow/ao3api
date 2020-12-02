@@ -2,3 +2,4 @@ cache/*
 *.html
 *.json
 *.txt
+*.py

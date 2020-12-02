@@ -93,7 +93,7 @@ func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, WorkC
 //Info
 func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos, Bookmarks, Hits, Summary string) {
 	var Stats stats
-	url := fmt.Sprintf("https://archiveofourown.org/works/%s/chapters/%s", wID, cID)
+	url := fmt.Sprintf("https://archiveofourown.org/works/%s/chapters/%s?view_adult=true", wID, cID)
 	c := colly.NewCollector(
 		colly.CacheDir("./cache"),
 	)
