@@ -4,6 +4,8 @@ package ao3
 
 import (
 	"fmt"
+	"log"
+	"strings"
 	"time"
 
 	"github.com/gocolly/colly"
@@ -37,6 +39,7 @@ type stats struct {
 	Bookmarks string
 	Hits      string
 	Summary   string
+	Fandom    string
 }
 
 func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, WorkChapters []string) {
@@ -91,8 +94,9 @@ func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, WorkC
 }
 
 //Info
-func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos, Bookmarks, Hits, Summary string) {
+func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos, Bookmarks, Hits, Summary, Fandom string) {
 	var Stats stats
+	//log.Println(wID, cID)
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/chapters/%s?view_adult=true", wID, cID)
 	c := colly.NewCollector(
 		colly.CacheDir("./cache"),
@@ -124,22 +128,45 @@ func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos
 		//log.Println(Stats)
 
 	})
-
+	//
 	c.OnHTML("div.summary.module", func(e *colly.HTMLElement) {
+		//log.Println(len(e.Text))
 		var sum []string
 		var Summary string
+
 		e.ForEach("p", func(_ int, el *colly.HTMLElement) {
+			//fmt.Println(el.Text)
 			sum = append(sum, el.Text)
 			//Stats.Summary = el.Text
 		})
-		Summary = fmt.Sprintf("%s %s", sum[0], sum[1])
-		//log.Println(len(Summary))
-		//log.Println(Summary)
+		//if len(sum) == 1 {
+		//	Summary = sum[0]
+		//} else if len(sum) == 2 {
+		//	Summary = fmt.Sprintf("%s %s", sum[0], sum[1])
+		//} else {
+		//	log.Println("Error in summary")
+		//}
+
+		Summary = strings.Join(sum, " ")
+
+		//Summary = fmt.Sprintf("%q\n", sum) //
+		//Summary = fmt.Sprintf("%s %s", sum[0], sum[1])
+		//log.Println(len(sum))
+		//log.Println(sum)
 		Stats.Summary = Summary
 
+	})
+	c.OnHTML("dd.fandom.tags", func(e *colly.HTMLElement) {
+		Fandom := e.ChildText("a.tag")
+		if Fandom == "" {
+			log.Printf("Fandom is null")
+		} //else {
+		//fmt.Println(Fandom)
+		//}
+		Stats.Fandom = Fandom
 	})
 
 	c.Visit(url)
 	c.Wait()
-	return Stats.Published, Stats.Updated, Stats.Words, Stats.Chapters, Stats.Comments, Stats.Kudos, Stats.Bookmarks, Stats.Hits, Stats.Summary
+	return Stats.Published, Stats.Updated, Stats.Words, Stats.Chapters, Stats.Comments, Stats.Kudos, Stats.Bookmarks, Stats.Hits, Stats.Summary, Stats.Fandom
 }
