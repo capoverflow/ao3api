@@ -9,5 +9,5 @@ import (
 func main() {
 	ParseWork := ao3api.ParseWork
 	//adding test
-	fmt.Println(ParseWork("17512811", "41254373"))
+	fmt.Println(ParseWork("23517349", "56400268"))
 }
