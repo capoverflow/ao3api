@@ -41,7 +41,6 @@ type stats struct {
 
 func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, WorkChapters []string) {
 	var sWork work
-
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate?view_adult=true", wID)
 	var title string
 	var author string
