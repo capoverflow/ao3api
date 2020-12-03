@@ -30,18 +30,20 @@ type ids struct {
 }
 
 type stats struct {
-	Published string
-	Updated   string
-	Words     string
-	Chapters  string
-	Comments  string
-	Kudos     string
-	Bookmarks string
-	Hits      string
-	Summary   string
-	Fandom    string
+	Published    string
+	Updated      string
+	Words        string
+	Chapters     string
+	Comments     string
+	Kudos        string
+	Bookmarks    string
+	Hits         string
+	Summary      string
+	Fandom       string
+	Relationship string
 }
 
+// Works ...
 func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, WorkChapters []string) {
 	var sWork work
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate?view_adult=true", wID)
@@ -93,8 +95,8 @@ func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, WorkC
 	return sWork.cTitle, sWork.Title, sWork.Author, sWork.Chaps
 }
 
-//Info
-func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos, Bookmarks, Hits, Summary, Fandom string) {
+//Info ...
+func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos, Bookmarks, Hits, Summary, Fandom, Relationship string) {
 	var Stats stats
 	//log.Println(wID, cID)
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/chapters/%s?view_adult=true", wID, cID)
@@ -157,16 +159,21 @@ func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos
 
 	})
 	c.OnHTML("dd.fandom.tags", func(e *colly.HTMLElement) {
-		Fandom := e.ChildText("a.tag")
-		if Fandom == "" {
+		fandom := e.ChildText("a.tag")
+		if fandom == "" {
 			log.Printf("Fandom is null")
 		} //else {
 		//fmt.Println(Fandom)
 		//}
-		Stats.Fandom = Fandom
+		Stats.Fandom = fandom
 	})
+	c.OnHTML("dd.relationship.tags", func(e *colly.HTMLElement) {
+		relationship := e.ChildText("a.tag")
+		//log.Println(relationship)
+		Stats.Relationship = relationship
 
+	})
 	c.Visit(url)
 	c.Wait()
-	return Stats.Published, Stats.Updated, Stats.Words, Stats.Chapters, Stats.Comments, Stats.Kudos, Stats.Bookmarks, Stats.Hits, Stats.Summary, Stats.Fandom
+	return Stats.Published, Stats.Updated, Stats.Words, Stats.Chapters, Stats.Comments, Stats.Kudos, Stats.Bookmarks, Stats.Hits, Stats.Relationship, Stats.Fandom, Stats.Summary
 }
