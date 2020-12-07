@@ -162,8 +162,12 @@ func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos
 		Stats.Fandom = fandom
 	})
 	c.OnHTML("dd.relationship.tags", func(e *colly.HTMLElement) {
-		relationship := e.ChildText("a.tag")
-		//log.Println(relationship)
+		var relationships []string
+		e.ForEach("a.tag", func(_ int, el *colly.HTMLElement) {
+			relationship := el.Text
+			relationships = append(relationships, relationship)
+		})
+		relationship := strings.Join(relationships, " | ")
 		Stats.Relationship = relationship
 
 	})
