@@ -114,23 +114,17 @@ func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos
 		Parallelism: 2,
 	})
 	c.OnHTML("dl.stats", func(e *colly.HTMLElement) {
-		var StatsText []string
-		e.ForEach("dd", func(_ int, el *colly.HTMLElement) {
-			//log.Println(el.Text, el.Index)
-			StatsText = append(StatsText, el.Text)
-		})
-		Stats.Published = StatsText[0]
-		Stats.Updated = StatsText[1]
-		Stats.Words = StatsText[2]
-		Stats.Chapters = StatsText[3]
-		Stats.Comments = StatsText[4]
-		Stats.Kudos = StatsText[5]
-		Stats.Bookmarks = StatsText[6]
-		Stats.Hits = StatsText[7]
-		//log.Println(Stats)
+		Stats.Published = e.ChildText("dd.published")
+		Stats.Updated = e.ChildText("dd.status")
+		Stats.Words = e.ChildText("dd.words")
+		Stats.Chapters = e.ChildText("dd.chapters")
+		Stats.Comments = e.ChildText("dd.comments")
+		Stats.Kudos = e.ChildText("dd.kudos")
+		Stats.Bookmarks = e.ChildText("dd.bookmarks")
+		Stats.Hits = e.ChildText("dd.hits")
 
 	})
-	//
+
 	c.OnHTML("div.summary.module", func(e *colly.HTMLElement) {
 		//log.Println(len(e.Text))
 		var sum []string
