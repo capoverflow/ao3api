@@ -136,7 +136,7 @@ func FindChapters(cID string, cIDs []string, chapsText []string) (string, []stri
 		//log.Println(chapsText[k])
 	} else if found == false && len(chaps) > 1 {
 		cTitle = chapsText[0]
-		log.Println("Error")
+		//log.Println("Error")
 	} else if len(cID) == 0 {
 		cTitle = "oneshot"
 		//log.Println("OneShot")
