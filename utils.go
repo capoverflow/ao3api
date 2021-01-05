@@ -115,26 +115,26 @@ func ReadFile() []id {
 }
 
 // FindChapters to find chapters from source url in the txt file
-func FindChapters(cID string, cIDs []string, chapsText []string) (string, []string) {
+func FindChapters(cID string, cIDs []string, chapsText []string) (string, []string, []string) {
 	//log.Println("... Debug FindChapters ...")
 	//log.Println(cIDs)
-	chaps := []string{}
+	ChapterIDs := []string{}
 	var cTitle string
 	for i := range cIDs {
 		splitPath := strings.Split(cIDs[i], "/")
 		index := SliceIndex(len(splitPath), func(i int) bool { return splitPath[i] == "chapters" })
 		tChap := splitPath[index+1]
-		chaps = append(chaps, tChap)
+		ChapterIDs = append(ChapterIDs, tChap)
 
 	}
 	//log.Println("Chaps =", chaps)
-	k, found := SliceFind(chaps, cID)
+	k, found := SliceFind(ChapterIDs, cID)
 	//log.Println(len(chaps))
 
 	if found {
 		cTitle = chapsText[k]
 		//log.Println(chapsText[k])
-	} else if found == false && len(chaps) > 1 {
+	} else if found == false && len(ChapterIDs) > 1 {
 		cTitle = chapsText[0]
 		//log.Println("Error")
 	} else if len(cID) == 0 {
@@ -142,5 +142,5 @@ func FindChapters(cID string, cIDs []string, chapsText []string) (string, []stri
 		//log.Println("OneShot")
 	}
 
-	return cTitle, chaps
+	return cTitle, ChapterIDs, chapsText
 }

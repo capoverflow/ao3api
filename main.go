@@ -12,12 +12,13 @@ import (
 )
 
 type work struct {
-	wID    string   //`json:"wID,omitempty"`
-	cID    string   //`json:"cID,omitempty"`
-	cTitle string   //`json:"cTitle,omitempty"`
-	Title  string   //`json:"Title,omitempty"`
-	Author string   //`json:"Author,omitempty"`
-	Chaps  []string //`json:"ChaptersTitles,omitempty"`
+	wID        string   //`json:"wID,omitempty"`
+	cID        string   //`json:"cID,omitempty"`
+	cTitle     string   //`json:"cTitle,omitempty"`
+	Title      string   //`json:"Title,omitempty"`
+	Author     string   //`json:"Author,omitempty"`
+	Chaps      []string //`json:"ChaptersTitles,omitempty"`
+	ChapterIDs []string //
 }
 
 type id struct {
@@ -44,7 +45,7 @@ type stats struct {
 }
 
 // Works ...
-func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, WorkChapters []string) {
+func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, ChapterIDs []string, Chaps []string) {
 	var sWork work
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate?view_adult=true", wID)
 	var title string
@@ -77,7 +78,7 @@ func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, WorkC
 			//log.Println(el.Text)
 		})
 
-		cTitle, chaps := FindChapters(cID, cIDs, chapsText)
+		cTitle, ChapterIDs, chapsText := FindChapters(cID, cIDs, chapsText)
 		//log.Println(chaps[0])
 		//log.Println(FindChapters(cID, cIDs, chapsText))
 		sWork.Author = author
@@ -85,14 +86,15 @@ func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, WorkC
 		sWork.wID = wID
 		sWork.cID = cID
 		sWork.cTitle = cTitle
-		sWork.Chaps = chaps
+		sWork.ChapterIDs = ChapterIDs
+		sWork.Chaps = chapsText
 		//log.Println(chaps)
 		//fmt.Printf("Title is %s Chapters title is %s\n", title, cTitle)
 	})
 	c.Visit(url)
 	c.Wait()
 	//log.Println(sWork.Chaps)
-	return sWork.cTitle, sWork.Title, sWork.Author, sWork.Chaps
+	return sWork.cTitle, sWork.Title, sWork.Author, sWork.ChapterIDs, sWork.Chaps
 }
 
 //Info ...
