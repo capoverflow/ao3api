@@ -31,17 +31,18 @@ type ids struct {
 }
 
 type stats struct {
-	Published    string
-	Updated      string
-	Words        string
-	Chapters     string
-	Comments     string
-	Kudos        string
-	Bookmarks    string
-	Hits         string
-	Summary      string
-	Fandom       string
-	Relationship string
+	Published       string
+	Updated         string
+	Words           string
+	Chapters        string
+	Comments        string
+	Kudos           string
+	Bookmarks       string
+	Hits            string
+	Summary         string
+	Fandom          string
+	Relationship    string
+	AlternativeTags []string
 }
 
 // Works ...
@@ -98,7 +99,7 @@ func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, Chapt
 }
 
 //Info ...
-func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos, Bookmarks, Hits, Summary, Fandom, Relationship string) {
+func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos, Bookmarks, Hits, Summary, Fandom, Relationship string, AlternativeTags []string) {
 	var Stats stats
 	//log.Println(wID, cID)
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/chapters/%s?view_adult=true", wID, cID)
@@ -173,7 +174,22 @@ func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos
 		Stats.Relationship = relationship
 
 	})
+
+	c.OnHTML("dd.freeform.tags", func(e *colly.HTMLElement) {
+		var AlternativeTags []string
+		e.ForEach("a.tag", func(_ int, el *colly.HTMLElement) {
+			if len(el.Text) != 0 {
+				AlternativeTag := el.Text
+				AlternativeTags = append(AlternativeTags, AlternativeTag)
+			}
+		})
+		//AlternativeTag := strings.Join(AlternativeTags, " | ")
+		//fmt.Println(AlternativeTag)
+		Stats.AlternativeTags = AlternativeTags
+
+	})
+
 	c.Visit(url)
 	c.Wait()
-	return Stats.Published, Stats.Updated, Stats.Words, Stats.Chapters, Stats.Comments, Stats.Kudos, Stats.Bookmarks, Stats.Hits, Stats.Relationship, Stats.Fandom, Stats.Summary
+	return Stats.Published, Stats.Updated, Stats.Words, Stats.Chapters, Stats.Comments, Stats.Kudos, Stats.Bookmarks, Stats.Hits, Stats.Relationship, Stats.Fandom, Stats.Summary, Stats.AlternativeTags
 }
