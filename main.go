@@ -41,19 +41,22 @@ type stats struct {
 	Hits            string
 	Summary         string
 	Fandom          string
-	Relationship    string
+	Relationship    []string
 	AlternativeTags []string
 }
 
 // Works ...
 func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, ChapterIDs []string, Chaps []string) {
 	var sWork work
-	url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate?view_adult=true", wID)
+	//url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate?view_adult=true", wID)
+	url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate", wID)
 	var title string
 	var author string
 	//var cIDs []string
 	c := colly.NewCollector(
 		colly.CacheDir("./cache"),
+		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"),
+		colly.AllowURLRevisit(),
 	)
 	c.Limit(&colly.LimitRule{
 		// Filter domains affected by this rule
@@ -92,14 +95,36 @@ func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, Chapt
 		//log.Println(chaps)
 		//fmt.Printf("Title is %s Chapters title is %s\n", title, cTitle)
 	})
+	//c.OnHTML("*", func(e *colly.HTMLElement) {
+	//	ao3Error = e
+	//	fmt.Println([]byte(ao3Error))
+	//})
+	c.OnRequest(func(r *colly.Request) {
+		log.Println("visiting", r.URL.String())
+
+	})
+	c.OnScraped(func(r *colly.Response) { // DONE
+		if len(r.Body) == 0 {
+			log.Fatal(r.Request)
+			log.Println(string(r.Body))
+		}
+		//fmt.Println(len(string(r.Body)))
+
+	})
+	//for i := 0; i < 4; i++ {
+	//	c.Visit(url)
+	//}
 	c.Visit(url)
-	c.Wait()
+	c.OnError(func(r *colly.Response, err error) {
+		log.Println("Request URL:", r.Request.URL, "failed with response:", r, "\nError:", err)
+	})
+
 	//log.Println(sWork.Chaps)
 	return sWork.cTitle, sWork.Title, sWork.Author, sWork.ChapterIDs, sWork.Chaps
 }
 
 //Info ...
-func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos, Bookmarks, Hits, Summary, Fandom, Relationship string, AlternativeTags []string) {
+func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos, Bookmarks, Hits, Summary, Fandom string, Relationship, AlternativeTags []string) {
 	var Stats stats
 	//log.Println(wID, cID)
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/chapters/%s?view_adult=true", wID, cID)
@@ -170,8 +195,8 @@ func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos
 			relationship := el.Text
 			relationships = append(relationships, relationship)
 		})
-		relationship := strings.Join(relationships, " | ")
-		Stats.Relationship = relationship
+		//relationship := strings.Join(relationships, " | ")
+		Stats.Relationship = relationships
 
 	})
 
@@ -188,8 +213,12 @@ func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos
 		Stats.AlternativeTags = AlternativeTags
 
 	})
+	c.OnRequest(func(r *colly.Request) {
+		//log.Println("visiting", r.URL.String())
+
+	})
 
 	c.Visit(url)
 	c.Wait()
-	return Stats.Published, Stats.Updated, Stats.Words, Stats.Chapters, Stats.Comments, Stats.Kudos, Stats.Bookmarks, Stats.Hits, Stats.Relationship, Stats.Fandom, Stats.Summary, Stats.AlternativeTags
+	return Stats.Published, Stats.Updated, Stats.Words, Stats.Chapters, Stats.Comments, Stats.Kudos, Stats.Bookmarks, Stats.Hits, Stats.Summary, Stats.Fandom, Stats.Relationship, Stats.AlternativeTags
 }
