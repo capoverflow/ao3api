@@ -48,8 +48,8 @@ type stats struct {
 // Works ...
 func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, ChapterIDs []string, Chaps []string) {
 	var sWork work
-	//url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate?view_adult=true", wID)
-	url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate", wID)
+	url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate?view_adult=true", wID)
+	//url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate", wID)
 	var title string
 	var author string
 	//var cIDs []string
