@@ -5,7 +5,7 @@ package ao3
 import (
 	"fmt"
 	"log"
-	"strings"
+	"reflect"
 	"time"
 
 	"github.com/gocolly/colly"
@@ -39,8 +39,8 @@ type stats struct {
 	Kudos           string
 	Bookmarks       string
 	Hits            string
-	Summary         string
 	Fandom          string
+	Summary         []string
 	Relationship    []string
 	AlternativeTags []string
 }
@@ -124,13 +124,14 @@ func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, Chapt
 }
 
 //Info ...
-func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos, Bookmarks, Hits, Summary, Fandom string, Relationship, AlternativeTags []string) {
+func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos, Bookmarks, Hits, Fandom string, Relationship, AlternativeTags, Summary []string) {
 	var Stats stats
-	//log.Println(wID, cID)
+	//log.Println("Info", wID, cID)
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/chapters/%s?view_adult=true", wID, cID)
 	c := colly.NewCollector(
 		colly.CacheDir("./cache"),
 	)
+	//log.Println("url", url)
 	c.Limit(&colly.LimitRule{
 		// Filter domains affected by this rule
 		DomainGlob: "*archiveofourown.org/*",
@@ -154,13 +155,16 @@ func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos
 	})
 
 	c.OnHTML("div.summary.module", func(e *colly.HTMLElement) {
-		//log.Println(len(e.Text))
+		log.Println("Summary debug")
+		log.Println(len(e.Text))
+		log.Println(e.Text)
 		var sum []string
-		var Summary string
+		//var Summary string
 
 		e.ForEach("p", func(_ int, el *colly.HTMLElement) {
-			//fmt.Println(el.Text)
-			sum = append(sum, el.Text)
+			log.Println(reflect.TypeOf(el.Text))
+			txt := fmt.Sprintf("%s", el.Text)
+			sum = append(sum, txt)
 			//Stats.Summary = el.Text
 		})
 		//if len(sum) == 1 {
@@ -171,13 +175,14 @@ func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos
 		//	log.Println("Error in summary")
 		//}
 
-		Summary = strings.Join(sum, " ")
+		//Summary = strings.Join(sum, " ")
 
 		//Summary = fmt.Sprintf("%q\n", sum) //
 		//Summary = fmt.Sprintf("%s %s", sum[0], sum[1])
 		//log.Println(len(sum))
-		//log.Println(sum)
-		Stats.Summary = Summary
+		log.Println(sum)
+		//log.Println("Summary: ", Summary)
+		Stats.Summary = sum
 
 	})
 	c.OnHTML("dd.fandom.tags", func(e *colly.HTMLElement) {
@@ -209,7 +214,7 @@ func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos
 			}
 		})
 		//AlternativeTag := strings.Join(AlternativeTags, " | ")
-		//fmt.Println(AlternativeTag)
+		//log.Println(AlternativeTag)
 		Stats.AlternativeTags = AlternativeTags
 
 	})
@@ -220,5 +225,5 @@ func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos
 
 	c.Visit(url)
 	c.Wait()
-	return Stats.Published, Stats.Updated, Stats.Words, Stats.Chapters, Stats.Comments, Stats.Kudos, Stats.Bookmarks, Stats.Hits, Stats.Summary, Stats.Fandom, Stats.Relationship, Stats.AlternativeTags
+	return Stats.Published, Stats.Updated, Stats.Words, Stats.Chapters, Stats.Comments, Stats.Kudos, Stats.Bookmarks, Stats.Hits, Stats.Fandom, Stats.Summary, Stats.Relationship, Stats.AlternativeTags
 }
