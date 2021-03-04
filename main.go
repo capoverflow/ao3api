@@ -5,20 +5,42 @@ package ao3
 import (
 	"fmt"
 	"log"
-	"reflect"
 	"time"
 
 	"github.com/gocolly/colly"
 )
 
-type work struct {
-	wID        string   //`json:"wID,omitempty"`
-	cID        string   //`json:"cID,omitempty"`
-	cTitle     string   //`json:"cTitle,omitempty"`
-	Title      string   //`json:"Title,omitempty"`
-	Author     string   //`json:"Author,omitempty"`
-	Chaps      []string //`json:"ChaptersTitles,omitempty"`
-	ChapterIDs []string //
+// type work struct {
+// 	wID        string   //`json:"wID,omitempty"`
+// 	cID        string   //`json:"cID,omitempty"`
+// 	cTitle     string   //`json:"cTitle,omitempty"`
+// 	Title      string   //`json:"Title,omitempty"`
+// 	Author     string   //`json:"Author,omitempty"`
+// 	Chaps      []string //`json:"ChaptersTitles,omitempty"`
+// 	ChapterIDs []string //
+// }
+
+type Work struct {
+	URL             string   `json:"URL,omitempty"`
+	WorkID          string   `json:"WorkID,omitempty"`
+	ChapterID       string   `json:"ChapterID,omitempty"`
+	ChapterTitle    string   `json:"ChapterTitle,omitempty"`
+	Title           string   `json:"Title,omitempty"`
+	Author          string   `json:"Author,omitempty"`
+	Chaps           []string `json:"ChaptersTitles,omitempty"`
+	ChapterIDs      []string `json:"ChaptersID,omitempty"`
+	Published       string   `json:"Published,omitempty"`
+	Updated         string   `json:"Updated,omitempty"`
+	Words           string   `json:"Words,omitempty"`
+	Chapters        string   `json:"Chapters,omitempty"`
+	Comments        string   `json:"Comments,omitempty"`
+	Kudos           string   `json:"Kudos,omitempty"`
+	Bookmarks       string   `json:"Bookmarks,omitempty"`
+	Hits            string   `json:"Hits,omitempty"`
+	Summary         []string `json:"Summary,omitempty"`
+	Fandom          string   `json:"Fandom,omitempty"`
+	Relationship    []string `json:"Relationship,omitempty"`
+	AlternativeTags []string `json:"AlternativeTags,omitempty"`
 }
 
 type id struct {
@@ -30,24 +52,24 @@ type ids struct {
 	works []id
 }
 
-type stats struct {
-	Published       string
-	Updated         string
-	Words           string
-	Chapters        string
-	Comments        string
-	Kudos           string
-	Bookmarks       string
-	Hits            string
-	Fandom          string
-	Summary         []string
-	Relationship    []string
-	AlternativeTags []string
-}
+// type stats struct {
+// 	Published       string
+// 	Updated         string
+// 	Words           string
+// 	Chapters        string
+// 	Comments        string
+// 	Kudos           string
+// 	Bookmarks       string
+// 	Hits            string
+// 	Fandom          string
+// 	Summary         []string
+// 	Relationship    []string
+// 	AlternativeTags []string
+// }
 
 // Works ...
-func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, ChapterIDs []string, Chaps []string) {
-	var sWork work
+func Works(wID, cID string) Work {
+	var sWork Work
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate?view_adult=true", wID)
 	//url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate", wID)
 	var title string
@@ -87,9 +109,9 @@ func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, Chapt
 		//log.Println(FindChapters(cID, cIDs, chapsText))
 		sWork.Author = author
 		sWork.Title = title
-		sWork.wID = wID
-		sWork.cID = cID
-		sWork.cTitle = cTitle
+		sWork.WorkID = wID
+		sWork.ChapterID = cID
+		sWork.ChapterTitle = cTitle
 		sWork.ChapterIDs = ChapterIDs
 		sWork.Chaps = chapsText
 		//log.Println(chaps)
@@ -120,12 +142,12 @@ func Works(wID, cID string) (ChaptersTitles, WorkTitle, WorkAuthor string, Chapt
 	})
 
 	//log.Println(sWork.Chaps)
-	return sWork.cTitle, sWork.Title, sWork.Author, sWork.ChapterIDs, sWork.Chaps
+	return sWork
 }
 
 //Info ...
-func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos, Bookmarks, Hits, Fandom string, Relationship, AlternativeTags, Summary []string) {
-	var Stats stats
+func Info(wID, cID string) Work {
+	var Stats Work
 	//log.Println("Info", wID, cID)
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/chapters/%s?view_adult=true", wID, cID)
 	c := colly.NewCollector(
@@ -155,14 +177,14 @@ func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos
 	})
 
 	c.OnHTML("div.summary.module", func(e *colly.HTMLElement) {
-		log.Println("Summary debug")
-		log.Println(len(e.Text))
-		log.Println(e.Text)
+		//log.Println("Summary debug")
+		//log.Println(len(e.Text))
+		//log.Println(e.Text)
 		var sum []string
 		//var Summary string
 
 		e.ForEach("p", func(_ int, el *colly.HTMLElement) {
-			log.Println(reflect.TypeOf(el.Text))
+			//log.Println(reflect.TypeOf(el.Text))
 			txt := fmt.Sprintf("%s", el.Text)
 			sum = append(sum, txt)
 			//Stats.Summary = el.Text
@@ -180,7 +202,7 @@ func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos
 		//Summary = fmt.Sprintf("%q\n", sum) //
 		//Summary = fmt.Sprintf("%s %s", sum[0], sum[1])
 		//log.Println(len(sum))
-		log.Println(sum)
+		//log.Println(sum)
 		//log.Println("Summary: ", Summary)
 		Stats.Summary = sum
 
@@ -225,5 +247,5 @@ func Info(wID, cID string) (Published, Updated, Words, Chapters, Comments, Kudos
 
 	c.Visit(url)
 	c.Wait()
-	return Stats.Published, Stats.Updated, Stats.Words, Stats.Chapters, Stats.Comments, Stats.Kudos, Stats.Bookmarks, Stats.Hits, Stats.Fandom, Stats.Summary, Stats.Relationship, Stats.AlternativeTags
+	return Stats
 }
