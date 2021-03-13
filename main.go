@@ -10,16 +10,7 @@ import (
 	"github.com/gocolly/colly"
 )
 
-// type work struct {
-// 	wID        string   //`json:"wID,omitempty"`
-// 	cID        string   //`json:"cID,omitempty"`
-// 	cTitle     string   //`json:"cTitle,omitempty"`
-// 	Title      string   //`json:"Title,omitempty"`
-// 	Author     string   //`json:"Author,omitempty"`
-// 	Chaps      []string //`json:"ChaptersTitles,omitempty"`
-// 	ChapterIDs []string //
-// }
-
+// Work is the struc with the fanfic info
 type Work struct {
 	URL             string   `json:"URL,omitempty"`
 	WorkID          string   `json:"WorkID,omitempty"`
@@ -27,8 +18,6 @@ type Work struct {
 	ChapterTitle    string   `json:"ChapterTitle,omitempty"`
 	Title           string   `json:"Title,omitempty"`
 	Author          string   `json:"Author,omitempty"`
-	Chaps           []string `json:"ChaptersTitles,omitempty"`
-	ChapterIDs      []string `json:"ChaptersID,omitempty"`
 	Published       string   `json:"Published,omitempty"`
 	Updated         string   `json:"Updated,omitempty"`
 	Words           string   `json:"Words,omitempty"`
@@ -37,8 +26,10 @@ type Work struct {
 	Kudos           string   `json:"Kudos,omitempty"`
 	Bookmarks       string   `json:"Bookmarks,omitempty"`
 	Hits            string   `json:"Hits,omitempty"`
-	Summary         []string `json:"Summary,omitempty"`
 	Fandom          string   `json:"Fandom,omitempty"`
+	Summary         []string `json:"Summary,omitempty"`
+	ChaptersTitles  []string `json:"ChaptersTitles,omitempty"`
+	ChaptersIDs     []string `json:"ChaptersIDs,omitempty"`
 	Relationship    []string `json:"Relationship,omitempty"`
 	AlternativeTags []string `json:"AlternativeTags,omitempty"`
 }
@@ -52,28 +43,13 @@ type ids struct {
 	works []id
 }
 
-// type stats struct {
-// 	Published       string
-// 	Updated         string
-// 	Words           string
-// 	Chapters        string
-// 	Comments        string
-// 	Kudos           string
-// 	Bookmarks       string
-// 	Hits            string
-// 	Fandom          string
-// 	Summary         []string
-// 	Relationship    []string
-// 	AlternativeTags []string
-// }
-
 // Works ...
 func Works(wID, cID string) Work {
-	var sWork Work
+	var fanfic Work
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate?view_adult=true", wID)
 	//url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate", wID)
-	var title string
-	var author string
+	// var title string
+	// var author string
 	//var cIDs []string
 	c := colly.NewCollector(
 		colly.CacheDir("./cache"),
@@ -92,12 +68,15 @@ func Works(wID, cID string) Work {
 	})
 
 	c.OnHTML("h2", func(e *colly.HTMLElement) {
-		title = e.ChildText("a:nth-child(1)")
-		author = e.ChildText("a:nth-child(2)")
+		// title := e.ChildText("a:nth-child(1)")
+		// log.Println(reflect.TypeOf(title))
+		fanfic.Title = e.ChildText("a:nth-child(1)")
+		fanfic.Author = e.ChildText("a:nth-child(2)")
 	})
 
 	c.OnHTML("#main > ol", func(e *colly.HTMLElement) {
 		cIDs := e.ChildAttrs("a", "href")
+
 		chapsText := []string{}
 		e.ForEach("a[href]", func(_ int, el *colly.HTMLElement) {
 			chapsText = append(chapsText, el.Text)
@@ -105,22 +84,14 @@ func Works(wID, cID string) Work {
 		})
 
 		cTitle, ChapterIDs, chapsText := FindChapters(cID, cIDs, chapsText)
-		//log.Println(chaps[0])
-		//log.Println(FindChapters(cID, cIDs, chapsText))
-		sWork.Author = author
-		sWork.Title = title
-		sWork.WorkID = wID
-		sWork.ChapterID = cID
-		sWork.ChapterTitle = cTitle
-		sWork.ChapterIDs = ChapterIDs
-		sWork.Chaps = chapsText
-		//log.Println(chaps)
-		//fmt.Printf("Title is %s Chapters title is %s\n", title, cTitle)
+		// fanfic.Author = author
+		// fanfic.Title = title
+		fanfic.WorkID = wID
+		fanfic.ChapterID = cID
+		fanfic.ChapterTitle = cTitle
+		fanfic.ChaptersIDs = ChapterIDs
+		fanfic.ChaptersTitles = chapsText
 	})
-	//c.OnHTML("*", func(e *colly.HTMLElement) {
-	//	ao3Error = e
-	//	fmt.Println([]byte(ao3Error))
-	//})
 	c.OnRequest(func(r *colly.Request) {
 		log.Println("visiting", r.URL.String())
 
@@ -130,8 +101,6 @@ func Works(wID, cID string) Work {
 			log.Fatal(r.Request)
 			log.Println(string(r.Body))
 		}
-		//fmt.Println(len(string(r.Body)))
-
 	})
 	//for i := 0; i < 4; i++ {
 	//	c.Visit(url)
@@ -140,9 +109,8 @@ func Works(wID, cID string) Work {
 	c.OnError(func(r *colly.Response, err error) {
 		log.Println("Request URL:", r.Request.URL, "failed with response:", r, "\nError:", err)
 	})
-
-	//log.Println(sWork.Chaps)
-	return sWork
+	//log.Println(fanfic)
+	return fanfic
 }
 
 //Info ...
@@ -189,21 +157,6 @@ func Info(wID, cID string) Work {
 			sum = append(sum, txt)
 			//Stats.Summary = el.Text
 		})
-		//if len(sum) == 1 {
-		//	Summary = sum[0]
-		//} else if len(sum) == 2 {
-		//	Summary = fmt.Sprintf("%s %s", sum[0], sum[1])
-		//} else {
-		//	log.Println("Error in summary")
-		//}
-
-		//Summary = strings.Join(sum, " ")
-
-		//Summary = fmt.Sprintf("%q\n", sum) //
-		//Summary = fmt.Sprintf("%s %s", sum[0], sum[1])
-		//log.Println(len(sum))
-		//log.Println(sum)
-		//log.Println("Summary: ", Summary)
 		Stats.Summary = sum
 
 	})

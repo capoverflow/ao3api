@@ -125,6 +125,7 @@ func FindChapters(cID string, cIDs []string, chapsText []string) (string, []stri
 		index := SliceIndex(len(splitPath), func(i int) bool { return splitPath[i] == "chapters" })
 		tChap := splitPath[index+1]
 		ChapterIDs = append(ChapterIDs, tChap)
+		// log.Printf("the n%d ChaptersID %s\n", i, ChapterIDs)
 
 	}
 	//log.Println("Chaps =", chaps)
