@@ -63,7 +63,6 @@ func Parsing(WorkID, ChapterID string, debug bool) (Work, int) {
 
 	}
 	return fanfic, status
-	//log.Println("getInfo: ", fanfic)
 }
 func getFirstChapterID(WorkID, ChapterID string, debug bool) ([]string, int) {
 	var StatusCode int
