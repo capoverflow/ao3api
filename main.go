@@ -50,24 +50,23 @@ type fanfic struct {
 }
 
 // Parsing parse the fanfiction from ao3
-func Parsing(WorkID, ChapterID string, debug bool) Work {
+func Parsing(WorkID, ChapterID string, debug bool) (Work, int) {
 	var ChaptersIDs []string
-	var err bool = false
-	ChaptersIDs, err = getFirstChapterID(WorkID, ChapterID, debug)
-	log.Println("ChaptersID: , ChaptersIDs length:", ChaptersIDs, len(ChaptersIDs))
-	fanfic := getInfo(WorkID, ChaptersIDs)
-	if err != false {
-		panic(err)
+	var status int
+	var fanfic Work
+	ChaptersIDs, status = getFirstChapterID(WorkID, ChapterID, debug)
+	// log.Println("ChaptersID: , ChaptersIDs length:", ChaptersIDs, len(ChaptersIDs), err)
+	if status != 404 {
+		fanfic := getInfo(WorkID, ChaptersIDs)
+		fanfic.WorkID = WorkID
+		fanfic.ChapterID = ChapterID
+
 	}
-	fanfic.WorkID = WorkID
-	fanfic.ChapterID = ChapterID
+	return fanfic, status
 	//log.Println("getInfo: ", fanfic)
-	return fanfic
-
 }
-func getFirstChapterID(WorkID, ChapterID string, debug bool) ([]string, bool) {
-	var err = false
-
+func getFirstChapterID(WorkID, ChapterID string, debug bool) ([]string, int) {
+	var StatusCode int
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate?view_adult=true", WorkID)
 	log.Printf("WorkID: %s, url %s", WorkID, url)
 	//url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate", wID)
@@ -114,11 +113,11 @@ func getFirstChapterID(WorkID, ChapterID string, debug bool) ([]string, bool) {
 	})
 	c.OnError(func(r *colly.Response, err error) {
 		log.Println("error:", r.StatusCode, err)
-		// StatusCode := r.StatusCode
+		StatusCode = r.StatusCode
 	})
 
 	c.Visit(url)
-	return ChaptersIDs, err
+	return ChaptersIDs, StatusCode
 }
 
 func getInfo(WorkID string, ChaptersIDs []string) Work {
