@@ -52,16 +52,24 @@ type fanfic struct {
 // Parsing parse the fanfiction from ao3
 func Parsing(WorkID, ChapterID string, debug bool) Work {
 	var ChaptersIDs []string
-	ChaptersIDs = getFirstChapterID(WorkID, ChapterID, debug)
+	var err bool = false
+	ChaptersIDs, err = getFirstChapterID(WorkID, ChapterID, debug)
+	log.Println("ChaptersID: , ChaptersIDs length:", ChaptersIDs, len(ChaptersIDs))
 	fanfic := getInfo(WorkID, ChaptersIDs)
+	if err != false {
+		panic(err)
+	}
 	fanfic.WorkID = WorkID
 	fanfic.ChapterID = ChapterID
 	//log.Println("getInfo: ", fanfic)
 	return fanfic
 
 }
-func getFirstChapterID(WorkID, ChapterID string, debug bool) []string {
+func getFirstChapterID(WorkID, ChapterID string, debug bool) ([]string, bool) {
+	var err = false
+
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate?view_adult=true", WorkID)
+	log.Printf("WorkID: %s, url %s", WorkID, url)
 	//url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate", wID)
 	// var title string
 	// var author string
@@ -94,16 +102,23 @@ func getFirstChapterID(WorkID, ChapterID string, debug bool) []string {
 	})
 	c.OnScraped(func(r *colly.Response) { // DONE
 		if len(r.Body) == 0 {
-			log.Fatal(r.Request)
+			log.Println(r.Request)
 			log.Println(string(r.Body))
 		}
 	})
 
-	c.Visit(url)
-	c.OnError(func(r *colly.Response, err error) {
-		log.Println("Request URL:", r.Request.URL, "failed with response:", r, "\nError:", err)
+	// extract status code
+	c.OnResponse(func(r *colly.Response) {
+		log.Println("response received", r.StatusCode)
+		// StatusCode := r.StatusCode
 	})
-	return ChaptersIDs
+	c.OnError(func(r *colly.Response, err error) {
+		log.Println("error:", r.StatusCode, err)
+		// StatusCode := r.StatusCode
+	})
+
+	c.Visit(url)
+	return ChaptersIDs, err
 }
 
 func getInfo(WorkID string, ChaptersIDs []string) Work {
@@ -199,9 +214,15 @@ func getInfo(WorkID string, ChaptersIDs []string) Work {
 	})
 
 	c.Visit(Fanfic.URL)
-	c.OnError(func(r *colly.Response, err error) {
-		log.Println("Request URL:", r.Request.URL, "failed with response:", r, "\nError:", err)
+	c.OnResponse(func(r *colly.Response) {
+		log.Println("response received", r.StatusCode)
+		// StatusCode := r.StatusCode
 	})
+	c.OnError(func(r *colly.Response, err error) {
+		log.Println("error:", r.StatusCode, err)
+		// StatusCode := r.StatusCode
+	})
+
 	c.Wait()
 	return Fanfic
 }
