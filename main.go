@@ -66,7 +66,7 @@ func Parsing(WorkID, ChapterID string, debug bool) (Work, int) {
 }
 func getFirstChapterID(WorkID, ChapterID string, debug bool) (ChaptersIDs []string, StatusCode int) {
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate?view_adult=true", WorkID)
-	log.Printf("WorkID: %s, url %s", WorkID, url)
+	// log.Printf("WorkID: %s, url %s", WorkID, url)
 	//url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate", wID)
 	// var title string
 	// var author string
@@ -105,11 +105,11 @@ func getFirstChapterID(WorkID, ChapterID string, debug bool) (ChaptersIDs []stri
 
 	// extract status code
 	c.OnResponse(func(r *colly.Response) {
-		log.Println("response received", r.StatusCode)
-		// StatusCode := r.StatusCode
+		// log.Println("response received", r.StatusCode)
+		StatusCode = r.StatusCode
 	})
 	c.OnError(func(r *colly.Response, err error) {
-		log.Println("error:", r.StatusCode, err)
+		// log.Println("error:", r.StatusCode, err)
 		StatusCode = r.StatusCode
 	})
 
