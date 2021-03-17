@@ -54,22 +54,21 @@ func Parsing(WorkID, ChapterID string, debug bool) (Work, int) {
 	var ChaptersIDs []string
 	var status int
 	var fanfic Work
+
 	ChaptersIDs, status = getFirstChapterID(WorkID, ChapterID, debug)
 	// log.Println("ChaptersID: , ChaptersIDs length:", ChaptersIDs, len(ChaptersIDs), err)
 	if status != 404 {
-		fanfic := getInfo(WorkID, ChaptersIDs)
+		fanfic = getInfo(WorkID, ChaptersIDs)
 		fanfic.WorkID = WorkID
 		fanfic.ChapterID = ChapterID
 
 	}
+	// log.Println(WorkID, ChapterID, status)
 	return fanfic, status
 }
 func getFirstChapterID(WorkID, ChapterID string, debug bool) (ChaptersIDs []string, StatusCode int) {
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate?view_adult=true", WorkID)
 	// log.Printf("WorkID: %s, url %s", WorkID, url)
-	//url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate", wID)
-	// var title string
-	// var author string
 	c := colly.NewCollector(
 		colly.CacheDir("./cache"),
 		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"),
@@ -114,6 +113,7 @@ func getFirstChapterID(WorkID, ChapterID string, debug bool) (ChaptersIDs []stri
 	})
 
 	c.Visit(url)
+
 	return ChaptersIDs, StatusCode
 }
 
