@@ -6,32 +6,34 @@ import (
 	"time"
 
 	"github.com/gocolly/colly"
+	"gorm.io/gorm"
 )
 
 //package main
 
 // Work is the struc with the fanfic info
 type Work struct {
-	URL             string   `json:"URL,omitempty"`
-	WorkID          string   `json:"WorkID,omitempty"`
-	ChapterID       string   `json:"ChapterID,omitempty"`
-	ChapterTitle    string   `json:"ChapterTitle,omitempty"`
-	Title           string   `json:"Title,omitempty"`
-	Author          string   `json:"Author,omitempty"`
-	Published       string   `json:"Published,omitempty"`
-	Updated         string   `json:"Updated,omitempty"`
-	Words           string   `json:"Words,omitempty"`
-	Chapters        string   `json:"Chapters,omitempty"`
-	Comments        string   `json:"Comments,omitempty"`
-	Kudos           string   `json:"Kudos,omitempty"`
-	Bookmarks       string   `json:"Bookmarks,omitempty"`
-	Hits            string   `json:"Hits,omitempty"`
-	Fandom          string   `json:"Fandom,omitempty"`
-	Summary         []string `json:"Summary,omitempty"`
-	ChaptersTitles  []string `json:"ChaptersTitles,omitempty"`
-	ChaptersIDs     []string `json:"ChaptersIDs,omitempty"`
-	Relationship    []string `json:"Relationship,omitempty"`
-	AlternativeTags []string `json:"AlternativeTags,omitempty"`
+	gorm.Model
+	URL             string   `gorm:"type:text" json:"URL,omitempty"`
+	WorkID          string   `gorm:"type:text" json:"WorkID,omitempty"`
+	ChapterID       string   `gorm:"type:text" json:"ChapterID,omitempty"`
+	ChapterTitle    string   `gorm:"type:text" json:"ChapterTitle,omitempty"`
+	Title           string   `gorm:"type:text" json:"Title,omitempty"`
+	Author          string   `gorm:"type:text" json:"Author,omitempty"`
+	Published       string   `gorm:"type:text" json:"Published,omitempty"`
+	Updated         string   `gorm:"type:text" json:"Updated,omitempty"`
+	Words           string   `gorm:"type:text" json:"Words,omitempty"`
+	Chapters        string   `gorm:"type:text" json:"Chapters,omitempty"`
+	Comments        string   `gorm:"type:text" json:"Comments,omitempty"`
+	Kudos           string   `gorm:"type:text" json:"Kudos,omitempty"`
+	Bookmarks       string   `gorm:"type:text" json:"Bookmarks,omitempty"`
+	Hits            string   `gorm:"type:text" json:"Hits,omitempty"`
+	Fandom          string   `gorm:"type:text" json:"Fandom,omitempty"`
+	Summary         []string `gorm:"type:text" json:"Summary,omitempty"`
+	ChaptersTitles  []string `gorm:"type:text" json:"ChaptersTitles,omitempty"`
+	ChaptersIDs     []string `gorm:"type:text" json:"ChaptersIDs,omitempty"`
+	Relationship    []string `gorm:"type:text" json:"Relationship,omitempty"`
+	AlternativeTags []string `gorm:"type:text" json:"AlternativeTags,omitempty"`
 }
 
 type id struct {
