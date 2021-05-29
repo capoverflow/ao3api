@@ -37,6 +37,6 @@ It return the chapters title, the title and the authors and the ids of all chapt
 
 * Adding support for summary (already in the old api). WORKING (29-11-2020)
 * Numbers of Kudos, Comments, Hits Working as of commit ()
-* cli client (another project)
+* cli client (another project) [here](https://gitlab.com/capoverflow/ao3cmd)
 
 
