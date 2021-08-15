@@ -138,38 +138,31 @@ func getInfo(WorkID string, ChaptersIDs []string) Work {
 	})
 
 	c.OnHTML("dl.stats", func(e *colly.HTMLElement) {
-		Fanfic.Published = e.ChildText("dd.published")
-		Fanfic.Updated = e.ChildText("dd.status")
-		Fanfic.Words = e.ChildText("dd.words")
-		Fanfic.Chapters = e.ChildText("dd.chapters")
-		Fanfic.Comments = e.ChildText("dd.comments")
-		Fanfic.Kudos = e.ChildText("dd.kudos")
-		Fanfic.Bookmarks = e.ChildText("dd.bookmarks")
-		Fanfic.Hits = e.ChildText("dd.hits")
+
+		Fanfic = Work{
+			Published: e.ChildText("dd.published"),
+			Updated:   e.ChildText("dd.status"),
+			Words:     e.ChildText("dd.words"),
+			Chapters:  e.ChildText("dd.chapters"),
+			Comments:  e.ChildText("dd.comments"),
+			Kudos:     e.ChildText("dd.kudos"),
+			Bookmarks: e.ChildText("dd.bookmarks"),
+			Hits:      e.ChildText("dd.hits"),
+		}
 
 	})
 	c.OnHTML("#workskin > div.preface.group", func(e *colly.HTMLElement) {
-		// log.Println(e.ChildText("h2.title.heading"))
 		Fanfic.Title = e.ChildText("h2.title.heading")
 		Fanfic.Author = e.ChildText("h3 > a")
-		// Fanfic.Title = tmp
-
-		// Title = e.ChildText("h2.title.heading")
-		// Author = ""
 	})
 
 	c.OnHTML("div.summary.module", func(e *colly.HTMLElement) {
-		//log.Println("Summary debug")
-		//log.Println(len(e.Text))
-		//log.Println(e.Text)
+
 		var sum []string
-		//var Summary string
 
 		e.ForEach("p", func(_ int, el *colly.HTMLElement) {
-			//log.Println(reflect.TypeOf(el.Text))
 			txt := fmt.Sprintf("%s", el.Text)
 			sum = append(sum, txt)
-			//Stats.Summary = el.Text
 		})
 		Fanfic.Summary = sum
 
@@ -179,9 +172,7 @@ func getInfo(WorkID string, ChaptersIDs []string) Work {
 		fandom := e.ChildText("a.tag")
 		if fandom == "" {
 			log.Printf("Fandom is null")
-		} //else {
-		//fmt.Println(Fandom)
-		//}
+		}
 		Fanfic.Fandom = fandom
 	})
 	c.OnHTML("dd.relationship.tags", func(e *colly.HTMLElement) {
@@ -190,7 +181,6 @@ func getInfo(WorkID string, ChaptersIDs []string) Work {
 			relationship := el.Text
 			relationships = append(relationships, relationship)
 		})
-		//relationship := strings.Join(relationships, " | ")
 		Fanfic.Relationship = relationships
 
 	})
@@ -203,8 +193,6 @@ func getInfo(WorkID string, ChaptersIDs []string) Work {
 				AlternativeTags = append(AlternativeTags, AlternativeTag)
 			}
 		})
-		//AlternativeTag := strings.Join(AlternativeTags, " | ")
-		//log.Println(AlternativeTag)
 		Fanfic.AlternativeTags = AlternativeTags
 
 	})
@@ -212,11 +200,9 @@ func getInfo(WorkID string, ChaptersIDs []string) Work {
 	c.Visit(Fanfic.URL)
 	c.OnResponse(func(r *colly.Response) {
 		log.Println("response received", r.StatusCode)
-		// StatusCode := r.StatusCode
 	})
 	c.OnError(func(r *colly.Response, err error) {
 		log.Println("error:", r.StatusCode, err)
-		// StatusCode := r.StatusCode
 	})
 
 	c.Wait()
