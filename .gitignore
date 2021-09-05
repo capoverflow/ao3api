@@ -4,3 +4,4 @@ cache/*
 *.json
 *.txt
 *.py
+*.old

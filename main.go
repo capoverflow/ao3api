@@ -1,210 +1,34 @@
 package ao3
 
 import (
-	"fmt"
 	"log"
-	"time"
 
-	"github.com/gocolly/colly"
+	"gitlab.com/capoverflow/ao3api/internal/scrapper"
+	"gitlab.com/capoverflow/ao3api/internal/structs"
 )
 
 //package main
 
 // Work is the struc with the fanfic info
-type Work struct {
-	URL             string   `json:"URL,omitempty"`
-	WorkID          string   `json:"WorkID,omitempty"`
-	ChapterID       string   `json:"ChapterID,omitempty"`
-	ChapterTitle    string   `json:"ChapterTitle,omitempty"`
-	Title           string   `json:"Title,omitempty"`
-	Author          string   `json:"Author,omitempty"`
-	Published       string   `json:"Published,omitempty"`
-	Updated         string   `json:"Updated,omitempty"`
-	Words           string   `json:"Words,omitempty"`
-	Chapters        string   `json:"Chapters,omitempty"`
-	Comments        string   `json:"Comments,omitempty"`
-	Kudos           string   `json:"Kudos,omitempty"`
-	Bookmarks       string   `json:"Bookmarks,omitempty"`
-	Hits            string   `json:"Hits,omitempty"`
-	Fandom          string   `json:"Fandom,omitempty"`
-	Summary         []string `json:"Summary,omitempty"`
-	ChaptersTitles  []string `json:"ChaptersTitles,omitempty"`
-	ChaptersIDs     []string `json:"ChaptersIDs,omitempty"`
-	Relationship    []string `json:"Relationship,omitempty"`
-	AlternativeTags []string `json:"AlternativeTags,omitempty"`
-}
-
-type id struct {
-	WorkID    string
-	ChapterID string
-}
-
-type ids struct {
-	works []id
-}
-
-type fanfic struct {
-	WorkID    string
-	ChapterID string
-	Debug     bool
-}
 
 // Parsing parse the fanfiction from ao3
-func Parsing(WorkID, ChapterID string, debug bool) (Work, int) {
+func Parsing(WorkID, ChapterID string, debug bool) (structs.Work, int) {
+	// log.Panic("parsing test")
+
 	var ChaptersIDs []string
 	var status int
-	var fanfic Work
+	var fanfic structs.Work
 
-	ChaptersIDs, status = getFirstChapterID(WorkID, ChapterID, debug)
+	ChaptersIDs, status = scrapper.GetFirstChapterID(WorkID, ChapterID, debug)
 	// log.Println("ChaptersID: , ChaptersIDs length:", ChaptersIDs, len(ChaptersIDs), err)
 	if status != 404 {
-		fanfic = getInfo(WorkID, ChaptersIDs)
+		fanfic = scrapper.GetInfo(WorkID, ChaptersIDs)
 		fanfic.WorkID = WorkID
 		fanfic.ChapterID = ChapterID
 
+	} else {
+		log.Panic("status 404")
 	}
 	// log.Println(WorkID, ChapterID, status)
 	return fanfic, status
-}
-func getFirstChapterID(WorkID, ChapterID string, debug bool) (ChaptersIDs []string, StatusCode int) {
-	url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate?view_adult=true", WorkID)
-	// log.Printf("WorkID: %s, url %s", WorkID, url)
-	c := colly.NewCollector(
-		colly.CacheDir("./cache"),
-		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"),
-		colly.AllowURLRevisit(),
-	)
-	c.Limit(&colly.LimitRule{
-		// Filter domains affected by this rule
-		DomainGlob: "*archiveofourown.org/*",
-		// Set a delay between requests to these domains
-		Delay: 5 * time.Second,
-		// Add an additional random delay
-		RandomDelay: 10 * time.Second,
-		// Add User Agent
-		Parallelism: 2,
-	})
-	c.OnHTML("#main > ol", func(e *colly.HTMLElement) {
-		hrefChaptersIDs := e.ChildAttrs("a", "href")
-		ChaptersIDs = findChaptersIDs(hrefChaptersIDs)
-	})
-
-	c.OnRequest(func(r *colly.Request) {
-		if debug == true {
-			log.Println("visiting", r.URL.String())
-		}
-
-	})
-	c.OnScraped(func(r *colly.Response) { // DONE
-		if len(r.Body) == 0 {
-			log.Println(r.Request)
-			log.Println(string(r.Body))
-		}
-	})
-
-	// extract status code
-	c.OnResponse(func(r *colly.Response) {
-		// log.Println("response received", r.StatusCode)
-		StatusCode = r.StatusCode
-	})
-	c.OnError(func(r *colly.Response, err error) {
-		// log.Println("error:", r.StatusCode, err)
-		StatusCode = r.StatusCode
-	})
-
-	c.Visit(url)
-
-	return ChaptersIDs, StatusCode
-}
-
-func getInfo(WorkID string, ChaptersIDs []string) Work {
-	var Fanfic Work
-	Fanfic.ChaptersIDs = ChaptersIDs
-	Fanfic.URL = fmt.Sprintf("https://archiveofourown.org/works/%s/chapters/%s?view_adult=true", WorkID, Fanfic.ChaptersIDs[0])
-	c := colly.NewCollector(
-		colly.CacheDir("./cache"),
-		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"),
-		//colly.AllowURLRevisit(),
-	)
-	c.Limit(&colly.LimitRule{
-		// Filter domains affected by this rule
-		DomainGlob: "*archiveofourown.org/*",
-		// Set a delay between requests to these domains
-		Delay: 5 * time.Second,
-		// Add an additional random delay
-		RandomDelay: 10 * time.Second,
-		// Add User Agent
-		Parallelism: 2,
-	})
-
-	c.OnHTML("dl.stats", func(e *colly.HTMLElement) {
-
-		Fanfic = Work{
-			Published: e.ChildText("dd.published"),
-			Updated:   e.ChildText("dd.status"),
-			Words:     e.ChildText("dd.words"),
-			Chapters:  e.ChildText("dd.chapters"),
-			Comments:  e.ChildText("dd.comments"),
-			Kudos:     e.ChildText("dd.kudos"),
-			Bookmarks: e.ChildText("dd.bookmarks"),
-			Hits:      e.ChildText("dd.hits"),
-		}
-
-	})
-	c.OnHTML("#workskin > div.preface.group", func(e *colly.HTMLElement) {
-		Fanfic.Title = e.ChildText("h2.title.heading")
-		Fanfic.Author = e.ChildText("h3 > a")
-	})
-
-	c.OnHTML("div.summary.module", func(e *colly.HTMLElement) {
-
-		var sum []string
-
-		e.ForEach("p", func(_ int, el *colly.HTMLElement) {
-			txt := fmt.Sprintf("%s", el.Text)
-			sum = append(sum, txt)
-		})
-		Fanfic.Summary = sum
-
-	})
-
-	c.OnHTML("dd.fandom.tags", func(e *colly.HTMLElement) {
-		fandom := e.ChildText("a.tag")
-		if fandom == "" {
-			log.Printf("Fandom is null")
-		}
-		Fanfic.Fandom = fandom
-	})
-	c.OnHTML("dd.relationship.tags", func(e *colly.HTMLElement) {
-		var relationships []string
-		e.ForEach("a.tag", func(_ int, el *colly.HTMLElement) {
-			relationship := el.Text
-			relationships = append(relationships, relationship)
-		})
-		Fanfic.Relationship = relationships
-
-	})
-
-	c.OnHTML("dd.freeform.tags", func(e *colly.HTMLElement) {
-		var AlternativeTags []string
-		e.ForEach("a.tag", func(_ int, el *colly.HTMLElement) {
-			if len(el.Text) != 0 {
-				AlternativeTag := el.Text
-				AlternativeTags = append(AlternativeTags, AlternativeTag)
-			}
-		})
-		Fanfic.AlternativeTags = AlternativeTags
-
-	})
-
-	c.Visit(Fanfic.URL)
-	c.OnResponse(func(r *colly.Response) {
-		log.Println("response received", r.StatusCode)
-	})
-	c.OnError(func(r *colly.Response, err error) {
-		log.Println("error:", r.StatusCode, err)
-	})
-
-	c.Wait()
-	return Fanfic
 }

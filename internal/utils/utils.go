@@ -1,4 +1,4 @@
-package ao3
+package utils
 
 import (
 	"bufio"
@@ -8,6 +8,8 @@ import (
 	//	"reflect"
 	"regexp"
 	"strings"
+
+	"gitlab.com/capoverflow/ao3api/internal/structs"
 	//	"log"
 )
 
@@ -60,14 +62,14 @@ func readLines(path string) ([]string, error) {
 }
 
 // ReadFile read from file
-func ReadFile() []id {
+func ReadFile() []structs.ID {
 	//var chaps []string
 	var wID string
 	var wChap string
 
 	var extract []string
-	var idsWork []id
-	var idWork id
+	var idsWork []structs.ID
+	var idWork structs.ID
 	//	var a int
 
 	//archive := regexp.MustCompile(`https?:\/\/archiveofourown.org\/works\/[0-9]+`)
@@ -115,7 +117,7 @@ func ReadFile() []id {
 }
 
 // FindChapters to find chapters from source url in the txt file
-func findChapters(cID string, cIDs []string, chapsText []string) (string, []string, []string) {
+func FindChapters(cID string, cIDs []string, chapsText []string) (string, []string, []string) {
 	//log.Println("... Debug FindChapters ...")
 	// log.Println(cIDs)
 	// log.Println(len(cIDs))
@@ -147,7 +149,7 @@ func findChapters(cID string, cIDs []string, chapsText []string) (string, []stri
 	return cTitle, ChapterIDs, chapsText
 }
 
-func findChaptersIDs(cIDs []string) []string {
+func FindChaptersIDs(cIDs []string) []string {
 	ChaptersIDs := []string{}
 	for i := range cIDs {
 		splitPath := strings.Split(cIDs[i], "/")
