@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/gocolly/colly"
-	"gitlab.com/capoverflow/ao3api/internal/structs"
+	"gitlab.com/capoverflow/ao3api/internal/ao3structs"
 )
 
-func GetInfo(WorkID string, ChaptersIDs []string) structs.Work {
-	var Fanfic structs.Work
+func GetInfo(WorkID string, ChaptersIDs []string) ao3structs.Work {
+	var Fanfic ao3structs.Work
 	Fanfic.ChaptersIDs = ChaptersIDs
 	Fanfic.URL = fmt.Sprintf("https://archiveofourown.org/works/%s/chapters/%s?view_adult=true", WorkID, Fanfic.ChaptersIDs[0])
 	c := colly.NewCollector(
@@ -31,7 +31,7 @@ func GetInfo(WorkID string, ChaptersIDs []string) structs.Work {
 
 	c.OnHTML("dl.stats", func(e *colly.HTMLElement) {
 
-		Fanfic = structs.Work{
+		Fanfic = ao3structs.Work{
 			Published: e.ChildText("dd.published"),
 			Updated:   e.ChildText("dd.status"),
 			Words:     e.ChildText("dd.words"),

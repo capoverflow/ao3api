@@ -1,4 +1,4 @@
-package structs
+package ao3structs
 
 type Work struct {
 	URL             string   `json:"URL,omitempty"`

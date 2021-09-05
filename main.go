@@ -3,8 +3,8 @@ package ao3
 import (
 	"log"
 
+	"gitlab.com/capoverflow/ao3api/internal/ao3structs"
 	"gitlab.com/capoverflow/ao3api/internal/scrapper"
-	"gitlab.com/capoverflow/ao3api/internal/structs"
 )
 
 //package main
@@ -12,12 +12,12 @@ import (
 // Work is the struc with the fanfic info
 
 // Parsing parse the fanfiction from ao3
-func Parsing(WorkID, ChapterID string, debug bool) (structs.Work, int) {
+func Fanfic(WorkID, ChapterID string, debug bool) (ao3structs.Work, int) {
 	// log.Panic("parsing test")
 
 	var ChaptersIDs []string
 	var status int
-	var fanfic structs.Work
+	var fanfic ao3structs.Work
 
 	ChaptersIDs, status = scrapper.GetFirstChapterID(WorkID, ChapterID, debug)
 	// log.Println("ChaptersID: , ChaptersIDs length:", ChaptersIDs, len(ChaptersIDs), err)
@@ -31,4 +31,10 @@ func Parsing(WorkID, ChapterID string, debug bool) (structs.Work, int) {
 	}
 	// log.Println(WorkID, ChapterID, status)
 	return fanfic, status
+}
+
+//Tags
+func Tags(tags string) {
+	log.Println(scrapper.Tags(tags))
+	// scrapper.Tags()
 }

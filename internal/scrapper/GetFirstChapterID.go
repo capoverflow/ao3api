@@ -33,7 +33,7 @@ func GetFirstChapterID(WorkID, ChapterID string, debug bool) (ChaptersIDs []stri
 	})
 
 	c.OnRequest(func(r *colly.Request) {
-		if debug == true {
+		if debug {
 			log.Println("visiting", r.URL.String())
 		}
 
