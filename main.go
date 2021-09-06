@@ -37,6 +37,7 @@ func Fanfic(WorkID, ChapterID string, debug bool) (ao3structs.Work, int) {
 
 //Tags
 func Search(search string) {
-	log.Println(scrapper.Search(search))
+	// log.Println(scrapper.Search(search))
+	scrapper.Search(search)
 	// scrapper.Tags()
 }

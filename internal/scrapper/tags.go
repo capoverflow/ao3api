@@ -8,7 +8,7 @@ import (
 	"github.com/gocolly/colly"
 )
 
-func Search(search string) (stuff string) {
+func Search(search string) {
 
 	searchURL := "https://archiveofourown.org/works/search?utf8=✓"
 	// https://archiveofourown.org/works/search?utf8=✓&work_search[query]=Clarke griffin
@@ -46,9 +46,20 @@ func Search(search string) (stuff string) {
 		Parallelism: 2,
 	})
 
-	c.OnHTML("#main > ol", func(e *colly.HTMLElement) {
+	c.OnHTML("ol.work.index.group", func(e *colly.HTMLElement) {
 		// log.Println(e.Text)
-		stuff = e.Text
+		// stuff = e.Text
+		e.ForEach("li > div.header.module > h4.heading", func(_ int, el *colly.HTMLElement) {
+
+			// el.ForEach("a", func(_ int, em *colly.HTMLElement) {
+			// 	// link, _ := em.DOM.Find("a").Attr("href")
+			// 	// // link = fmt.Sprintf("https://archiveofourown.org%s", link)
+			// 	// // log.Println(em.DOM.Find("a").Text(), link)
+			// 	// log.Println(link)
+			// 	log.Println(em.Text)
+
+			// })
+		})
 	})
 
 	c.OnRequest(func(r *colly.Request) {
@@ -72,5 +83,5 @@ func Search(search string) (stuff string) {
 
 	c.Visit(u.String())
 
-	return stuff
+	// return stuff
 }
