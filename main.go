@@ -2,18 +2,20 @@ package ao3
 
 import (
 	"log"
+	"os"
 
 	"gitlab.com/capoverflow/ao3api/internal/ao3structs"
 	"gitlab.com/capoverflow/ao3api/internal/scrapper"
 )
 
-//package main
-
-// Work is the struc with the fanfic info
+func init() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	log.SetPrefix("ao3api: ")
+	log.SetOutput(os.Stderr)
+}
 
 // Parsing parse the fanfiction from ao3
 func Fanfic(WorkID, ChapterID string, debug bool) (ao3structs.Work, int) {
-	// log.Panic("parsing test")
 
 	var ChaptersIDs []string
 	var status int
@@ -34,7 +36,7 @@ func Fanfic(WorkID, ChapterID string, debug bool) (ao3structs.Work, int) {
 }
 
 //Tags
-func Tags(tags string) {
-	log.Println(scrapper.Tags(tags))
+func Search(search string) {
+	log.Println(scrapper.Search(search))
 	// scrapper.Tags()
 }
