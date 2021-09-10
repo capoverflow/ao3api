@@ -28,9 +28,9 @@ func Fanfic(WorkID, ChapterID string, debug bool) (ao3structs.Work, int) {
 		fanfic.WorkID = WorkID
 		fanfic.ChapterID = ChapterID
 
-	} else {
-		log.Panic("status 404")
-	}
+	} //else {
+	// 	log.Println("status 404")
+	// }
 	// log.Println(WorkID, ChapterID, status)
 	return fanfic, status
 }
