@@ -15,24 +15,23 @@ func init() {
 }
 
 // Parsing parse the fanfiction from ao3
-func Fanfic(WorkID, ChapterID string, debug bool) (ao3structs.Work, int) {
-
+func Fanfic(WorkID, ChapterID string, debug bool) (fanfic ao3structs.Work, status int, err error) {
 	var ChaptersIDs []string
-	var status int
-	var fanfic ao3structs.Work
+	// var fanfic ao3structs.Work
 
-	ChaptersIDs, status = scrapper.GetFirstChapterID(WorkID, ChapterID, debug)
-	// log.Println("ChaptersID: , ChaptersIDs length:", ChaptersIDs, len(ChaptersIDs), err)
+	ChaptersIDs, status, err = scrapper.GetFirstChapterID(WorkID, ChapterID, debug)
+	// log.Println("ChaptersIDs: , ChaptersIDs length:", ChaptersIDs, len(ChaptersIDs))
 	if status != 404 {
-		fanfic = scrapper.GetInfo(WorkID, ChaptersIDs)
-		fanfic.WorkID = WorkID
-		fanfic.ChapterID = ChapterID
-
-	} //else {
-	// 	log.Println("status 404")
-	// }
+		if len(ChaptersIDs) != 0 {
+			fanfic = scrapper.GetInfo(WorkID, ChaptersIDs)
+			fanfic.WorkID = WorkID
+			fanfic.ChapterID = ChapterID
+		}
+	} else {
+		log.Println("status 404")
+	}
 	// log.Println(WorkID, ChapterID, status)
-	return fanfic, status
+	return fanfic, status, err
 }
 
 //Tags

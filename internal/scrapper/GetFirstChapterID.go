@@ -1,6 +1,7 @@
 package scrapper
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -9,7 +10,10 @@ import (
 	"gitlab.com/capoverflow/ao3api/internal/utils"
 )
 
-func GetFirstChapterID(WorkID, ChapterID string, debug bool) (ChaptersIDs []string, StatusCode int) {
+func GetFirstChapterID(WorkID, ChapterID string, debug bool) (ChaptersIDs []string, StatusCode int, err error) {
+	ChaptersIDs = []string{}
+	err = nil
+
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate?view_adult=true", WorkID)
 	// log.Printf("WorkID: %s, url %s", WorkID, url)
 	c := colly.NewCollector(
@@ -27,28 +31,43 @@ func GetFirstChapterID(WorkID, ChapterID string, debug bool) (ChaptersIDs []stri
 		// Add User Agent
 		Parallelism: 2,
 	})
-	c.OnHTML("#main > ol", func(e *colly.HTMLElement) {
-		hrefChaptersIDs := e.ChildAttrs("a", "href")
-		ChaptersIDs = utils.FindChaptersIDs(hrefChaptersIDs)
-	})
+	if debug {
+		c.OnHTML("html", func(e *colly.HTMLElement) {
+			log.Println(e.Text)
+
+		})
+	} else {
+		c.OnHTML("#signin", func(e *colly.HTMLElement) {
+			// err =
+			err = errors.New("require login")
+			// return ChaptersIDs, -1, err
+		})
+		c.OnHTML("#main > ol", func(e *colly.HTMLElement) {
+			hrefChaptersIDs := e.ChildAttrs("a", "href")
+			ChaptersIDs = utils.FindChaptersIDs(hrefChaptersIDs)
+		})
+	}
 
 	c.OnRequest(func(r *colly.Request) {
 		if debug {
 			log.Println("visiting", r.URL.String())
+			log.Println(r.Headers)
 		}
-
 	})
 	c.OnScraped(func(r *colly.Response) { // DONE
 		if len(r.Body) == 0 {
 			log.Println(r.Request)
 			log.Println(string(r.Body))
 		}
+
 	})
 
 	// extract status code
 	c.OnResponse(func(r *colly.Response) {
-		// log.Println("response received", r.StatusCode)
+		log.Println("response received", r.StatusCode)
 		StatusCode = r.StatusCode
+		fmt.Println(r.Ctx.Get("url"))
+
 	})
 	c.OnError(func(r *colly.Response, err error) {
 		// log.Println("error:", r.StatusCode, err)
@@ -56,6 +75,5 @@ func GetFirstChapterID(WorkID, ChapterID string, debug bool) (ChaptersIDs []stri
 	})
 
 	c.Visit(url)
-
-	return ChaptersIDs, StatusCode
+	return ChaptersIDs, StatusCode, err
 }
