@@ -8,8 +8,6 @@ import (
 	//	"reflect"
 	"regexp"
 	"strings"
-
-	"gitlab.com/capoverflow/ao3api/internal/ao3structs"
 	//	"log"
 )
 
@@ -62,14 +60,14 @@ func readLines(path string) ([]string, error) {
 }
 
 // ReadFile read from file
-func ReadFile() []ao3structs.ID {
+func ReadFile() []structs.ID {
 	//var chaps []string
 	var wID string
 	var wChap string
 
 	var extract []string
-	var idsWork []ao3structs.ID
-	var idWork ao3structs.ID
+	var idsWork []structs.ID
+	var idWork structs.ID
 	//	var a int
 
 	//archive := regexp.MustCompile(`https?:\/\/archiveofourown.org\/works\/[0-9]+`)

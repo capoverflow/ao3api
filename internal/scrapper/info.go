@@ -5,8 +5,9 @@ import (
 	"log"
 	"time"
 
+	"ao3api/internal/ao3structs"
+
 	"github.com/gocolly/colly"
-	"gitlab.com/capoverflow/ao3api/internal/ao3structs"
 )
 
 func GetInfo(WorkID string, ChaptersIDs []string) ao3structs.Work {

@@ -6,8 +6,9 @@ import (
 	"log"
 	"time"
 
+	"ao3api/internal/utils"
+
 	"github.com/gocolly/colly"
-	"gitlab.com/capoverflow/ao3api/internal/utils"
 )
 
 func GetFirstChapterID(WorkID, ChapterID string, debug bool) (ChaptersIDs []string, StatusCode int, err error) {
@@ -69,9 +70,11 @@ func GetFirstChapterID(WorkID, ChapterID string, debug bool) (ChaptersIDs []stri
 		fmt.Println(r.Ctx.Get("url"))
 
 	})
-	c.OnError(func(r *colly.Response, err error) {
+	c.OnError(func(r *colly.Response, OnError error) {
 		// log.Println("error:", r.StatusCode, err)
+		err = errors.New(OnError.Error())
 		StatusCode = r.StatusCode
+
 	})
 
 	c.Visit(url)

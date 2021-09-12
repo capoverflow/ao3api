@@ -1,5 +1,6 @@
-package ao3structs
+package models
 
+//Work ..
 type Work struct {
 	URL             string   `json:"URL,omitempty"`
 	WorkID          string   `json:"WorkID,omitempty"`

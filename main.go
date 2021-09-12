@@ -1,11 +1,10 @@
 package ao3
 
 import (
+	"ao3api/internal/models"
+	"ao3api/internal/scrapper"
 	"log"
 	"os"
-
-	"gitlab.com/capoverflow/ao3api/internal/ao3structs"
-	"gitlab.com/capoverflow/ao3api/internal/scrapper"
 )
 
 func init() {
@@ -15,7 +14,7 @@ func init() {
 }
 
 // Parsing parse the fanfiction from ao3
-func Fanfic(WorkID, ChapterID string, debug bool) (fanfic ao3structs.Work, status int, err error) {
+func Fanfic(WorkID, ChapterID string, debug bool) (fanfic models.Work, status int, err error) {
 	var ChaptersIDs []string
 	// var fanfic ao3structs.Work
 
