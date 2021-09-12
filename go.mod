@@ -1,4 +1,4 @@
-module gitlab.com/capoverflow/ao3api
+module gitlab.com/capoverflow/ao3
 
 go 1.17
 
