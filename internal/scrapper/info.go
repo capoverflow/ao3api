@@ -1,7 +1,7 @@
 package scrapper
 
 import (
-	"ao3api/models"
+	"ao3/models"
 	"fmt"
 	"log"
 	"time"

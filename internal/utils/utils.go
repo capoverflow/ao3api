@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"ao3api/models"
+	"ao3/models"
 	"bufio"
 	"log"
 	"os"
