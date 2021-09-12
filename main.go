@@ -1,8 +1,8 @@
 package ao3
 
 import (
-	"ao3api/internal/models"
 	"ao3api/internal/scrapper"
+	"ao3api/models"
 	"log"
 	"os"
 )

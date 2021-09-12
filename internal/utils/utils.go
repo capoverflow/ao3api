@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"ao3api/models"
 	"bufio"
 	"log"
 	"os"
@@ -60,14 +61,14 @@ func readLines(path string) ([]string, error) {
 }
 
 // ReadFile read from file
-func ReadFile() []structs.ID {
+func ReadFile() []models.ID {
 	//var chaps []string
 	var wID string
 	var wChap string
 
 	var extract []string
-	var idsWork []structs.ID
-	var idWork structs.ID
+	var idsWork []models.ID
+	var idWork models.ID
 	//	var a int
 
 	//archive := regexp.MustCompile(`https?:\/\/archiveofourown.org\/works\/[0-9]+`)

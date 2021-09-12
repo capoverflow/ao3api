@@ -1,17 +1,16 @@
 package scrapper
 
 import (
+	"ao3api/models"
 	"fmt"
 	"log"
 	"time"
 
-	"ao3api/internal/ao3structs"
-
 	"github.com/gocolly/colly"
 )
 
-func GetInfo(WorkID string, ChaptersIDs []string) ao3structs.Work {
-	var Fanfic ao3structs.Work
+func GetInfo(WorkID string, ChaptersIDs []string) models.Work {
+	var Fanfic models.Work
 	Fanfic.ChaptersIDs = ChaptersIDs
 	Fanfic.URL = fmt.Sprintf("https://archiveofourown.org/works/%s/chapters/%s?view_adult=true", WorkID, Fanfic.ChaptersIDs[0])
 	c := colly.NewCollector(
@@ -32,7 +31,7 @@ func GetInfo(WorkID string, ChaptersIDs []string) ao3structs.Work {
 
 	c.OnHTML("dl.stats", func(e *colly.HTMLElement) {
 
-		Fanfic = ao3structs.Work{
+		Fanfic = models.Work{
 			Published: e.ChildText("dd.published"),
 			Updated:   e.ChildText("dd.status"),
 			Words:     e.ChildText("dd.words"),
