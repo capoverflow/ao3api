@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"ao3/internal/utils"
+	"gitlab.com/capoverflow/ao3api/internal/utils"
 
 	"github.com/gocolly/colly"
 )

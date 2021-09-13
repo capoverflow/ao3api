@@ -1,10 +1,11 @@
 package ao3
 
 import (
-	"ao3/internal/scrapper"
-	"ao3/models"
 	"log"
 	"os"
+
+	"gitlab.com/capoverflow/ao3api/internal/scrapper"
+	"gitlab.com/capoverflow/ao3api/models"
 )
 
 func init() {

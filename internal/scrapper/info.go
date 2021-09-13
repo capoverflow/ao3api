@@ -1,10 +1,11 @@
 package scrapper
 
 import (
-	"ao3/models"
 	"fmt"
 	"log"
 	"time"
+
+	"gitlab.com/capoverflow/ao3api/models"
 
 	"github.com/gocolly/colly"
 )

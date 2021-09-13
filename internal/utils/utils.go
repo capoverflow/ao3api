@@ -1,10 +1,11 @@
 package utils
 
 import (
-	"ao3/models"
 	"bufio"
 	"log"
 	"os"
+
+	"gitlab.com/capoverflow/ao3api/models"
 
 	//	"reflect"
 	"regexp"
