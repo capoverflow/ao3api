@@ -34,3 +34,14 @@ type Fanfic struct {
 	ChapterID string
 	Debug     bool
 }
+
+type Search struct {
+	AnyField         string
+	Title            string
+	Author           string
+	Oneshot          bool
+	Language         string
+	CompletionStatus bool
+	Fandoms          string
+	Relationship     string
+}

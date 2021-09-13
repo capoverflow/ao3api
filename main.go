@@ -35,8 +35,7 @@ func Fanfic(WorkID, ChapterID string, debug bool) (fanfic models.Work, status in
 }
 
 //Tags
-func Search(search string) {
-	// log.Println(scrapper.Search(search))
-	scrapper.Search(search)
-	// scrapper.Tags()
+func Search(SearchString models.Search) {
+	scrapper.Search(SearchString)
+
 }

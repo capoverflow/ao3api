@@ -6,30 +6,41 @@ import (
 	"time"
 
 	"github.com/gocolly/colly"
+	"gitlab.com/capoverflow/ao3api/models"
 )
 
-func Search(search string) {
+func Search(SearchString models.Search) {
+	log.Println(SearchString)
 
-	searchURL := "https://archiveofourown.org/works/search?utf8=✓"
-	// https://archiveofourown.org/works/search?utf8=✓&work_search[query]=Clarke griffin
+	searchURL := "https://archiveofourown.org/works/search?"
 	u, err := url.Parse(searchURL)
 	if err != nil {
 		log.Println(err)
 	}
 	log.Println(u.Query())
 	q := u.Query()
-	q.Set("work_search[query]", "Clarke")
-	log.Println(u.String())
+	if len(SearchString.AnyField) != 0 {
+		q.Add("work_search[query]", SearchString.AnyField)
+	}
+	if len(SearchString.Title) != 0 {
+		q.Add("work_search[title]", SearchString.Title)
+	}
+	if len(SearchString.Author) != 0 {
+		q.Add("work_search[creators]", SearchString.Author)
+	}
+	if len(SearchString.Fandoms) != 0 {
+		q.Add("work_search[fandom_names]", SearchString.Fandoms)
+	}
+	if len(SearchString.Relationship) != 0 {
+		// Relationship := strings.Replace(SearchString.Relationship, "/", "*s*", -1)
+		// log.Println(Relationship)
+		q.Add("work_search[relationship_names]", SearchString.Relationship)
+	}
+	// q.Set("work_search[query]", )
+	// q.Set("work_search[fandom_names]", SearchString.Fandoms)
 	u.RawQuery = q.Encode()
-	log.Println(u.String())
-	// tags = u.Path
-	// return search
+	log.Println(q.Encode())
 
-	// // path := "path with?reserved+characters"
-	// // log.Println(url.PathEscape(path))
-
-	// url := fmt.Sprintf("https://archiveofourown.org/tags/%s/works", url.PathEscape(tags))
-	// // log.Printf("WorkID: %s, url %s", WorkID, url)
 	c := colly.NewCollector(
 		colly.CacheDir("./cache"),
 		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"),
@@ -51,14 +62,14 @@ func Search(search string) {
 		// stuff = e.Text
 		e.ForEach("li > div.header.module > h4.heading", func(_ int, el *colly.HTMLElement) {
 
-			// el.ForEach("a", func(_ int, em *colly.HTMLElement) {
-			// 	// link, _ := em.DOM.Find("a").Attr("href")
-			// 	// // link = fmt.Sprintf("https://archiveofourown.org%s", link)
-			// 	// // log.Println(em.DOM.Find("a").Text(), link)
-			// 	// log.Println(link)
-			// 	log.Println(em.Text)
+			el.ForEach("a", func(_ int, em *colly.HTMLElement) {
+				// link, _ := em.DOM.Find("a").Attr("href")
+				// link = fmt.Sprintf("https://archiveofourown.org%s", link)
+				// log.Println(em.DOM.Find("a").Text(), link)
+				// log.Println(link)
+				// log.Println(em.Text)
 
-			// })
+			})
 		})
 	})
 
