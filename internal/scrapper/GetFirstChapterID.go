@@ -8,6 +8,7 @@ import (
 
 	"gitlab.com/capoverflow/ao3api/internal/utils"
 
+	"github.com/corpix/uarand"
 	"github.com/gocolly/colly"
 )
 
@@ -19,7 +20,8 @@ func GetFirstChapterID(WorkID, ChapterID string, debug bool) (ChaptersIDs []stri
 	// log.Printf("WorkID: %s, url %s", WorkID, url)
 	c := colly.NewCollector(
 		colly.CacheDir("./cache"),
-		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"),
+		colly.UserAgent(uarand.GetRandom()),
+		// colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"),
 		colly.AllowURLRevisit(),
 	)
 	c.Limit(&colly.LimitRule{
