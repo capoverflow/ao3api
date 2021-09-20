@@ -10,9 +10,10 @@ import (
 
 	"github.com/corpix/uarand"
 	"github.com/gocolly/colly"
+	"github.com/gocolly/colly/proxy"
 )
 
-func GetFirstChapterID(WorkID, ChapterID string, debug bool) (ChaptersIDs []string, StatusCode int, err error) {
+func GetFirstChapterID(WorkID, ChapterID string, proxyURLs []string, debug bool) (ChaptersIDs []string, StatusCode int, err error) {
 	ChaptersIDs = []string{}
 	err = nil
 
@@ -34,6 +35,13 @@ func GetFirstChapterID(WorkID, ChapterID string, debug bool) (ChaptersIDs []stri
 		// Add User Agent
 		Parallelism: 2,
 	})
+	if len(proxyURLs) != 0 {
+		rp, err := proxy.RoundRobinProxySwitcher(proxyURLs...)
+		if err != nil {
+			log.Fatal(err)
+		}
+		c.SetProxyFunc(rp)
+	}
 	if debug {
 		c.OnHTML("html", func(e *colly.HTMLElement) {
 			log.Println(e.Text)
