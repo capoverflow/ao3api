@@ -7,7 +7,7 @@ type Work struct {
 	ChapterID       string   `json:"ChapterID,omitempty"`
 	ChapterTitle    string   `json:"ChapterTitle,omitempty"`
 	Title           string   `json:"Title,omitempty"`
-	Author          string   `json:"Author,omitempty"`
+	Author          []string `json:"Author,omitempty"`
 	Published       string   `json:"Published,omitempty"`
 	Updated         string   `json:"Updated,omitempty"`
 	Words           string   `json:"Words,omitempty"`
@@ -16,12 +16,13 @@ type Work struct {
 	Kudos           string   `json:"Kudos,omitempty"`
 	Bookmarks       string   `json:"Bookmarks,omitempty"`
 	Hits            string   `json:"Hits,omitempty"`
-	Fandom          string   `json:"Fandom,omitempty"`
+	Fandom          []string `json:"Fandom,omitempty"`
 	Summary         []string `json:"Summary,omitempty"`
 	ChaptersTitles  []string `json:"ChaptersTitles,omitempty"`
 	ChaptersIDs     []string `json:"ChaptersIDs,omitempty"`
 	Relationship    []string `json:"Relationship,omitempty"`
 	AlternativeTags []string `json:"AlternativeTags,omitempty"`
+	Downloads       []string `json:"Downloads,omitempty"`
 }
 
 type ID struct {

@@ -1,6 +1,7 @@
 package ao3
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -26,6 +27,7 @@ func Fanfic(WorkID, ChapterID string, debug bool) (fanfic models.Work, status in
 			fanfic = scrapper.GetInfo(WorkID, ChaptersIDs)
 			fanfic.WorkID = WorkID
 			fanfic.ChapterID = ChapterID
+			fanfic.URL = fmt.Sprintf("https://archiveofourown.org/works/%s", WorkID)
 		}
 	} else {
 		log.Println("status 404")

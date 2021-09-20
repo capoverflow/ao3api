@@ -2,7 +2,10 @@ module gitlab.com/capoverflow/ao3api
 
 go 1.17
 
-require github.com/gocolly/colly v1.2.0
+require (
+	github.com/corpix/uarand v0.1.1
+	github.com/gocolly/colly v1.2.0
+)
 
 require (
 	github.com/PuerkitoBio/goquery v1.7.1 // indirect
