@@ -9,11 +9,12 @@ import (
 	"gitlab.com/capoverflow/ao3api/models"
 
 	"github.com/gocolly/colly"
+	"github.com/gocolly/colly/proxy"
 
 	"github.com/corpix/uarand"
 )
 
-func GetInfo(WorkID string, ChaptersIDs []string) models.Work {
+func GetInfo(WorkID string, ChaptersIDs []string, proxyURLs []string) models.Work {
 	var Fanfic models.Work
 	Fanfic.ChaptersIDs = ChaptersIDs
 	Fanfic.URL = fmt.Sprintf("https://archiveofourown.org/works/%s/chapters/%s?view_adult=true", WorkID, Fanfic.ChaptersIDs[0])
@@ -33,6 +34,14 @@ func GetInfo(WorkID string, ChaptersIDs []string) models.Work {
 		// Add User Agent
 		Parallelism: 2,
 	})
+
+	if len(proxyURLs) != 0 {
+		rp, err := proxy.RoundRobinProxySwitcher(proxyURLs...)
+		if err != nil {
+			log.Fatal(err)
+		}
+		c.SetProxyFunc(rp)
+	}
 
 	c.OnHTML("dl.stats", func(e *colly.HTMLElement) {
 
