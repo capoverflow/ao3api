@@ -44,3 +44,8 @@ func Search(SearchString models.Search) {
 	scrapper.Search(SearchString)
 
 }
+
+func Users(Author string) (AuthorInfo models.User) {
+	AuthorInfo = scrapper.GetUsersInfo(Author)
+	return AuthorInfo
+}
