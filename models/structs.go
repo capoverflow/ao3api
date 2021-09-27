@@ -46,3 +46,18 @@ type Search struct {
 	Fandoms          string
 	Relationship     string
 }
+
+type User struct {
+	Username  string
+	Profile   UserProfile
+	Works     []Work
+	Bookmarks []Work
+	Gift      []Work
+}
+
+type UserProfile struct {
+	Pseuds   string
+	JoinDate string
+	Email    string
+	Bio      string
+}

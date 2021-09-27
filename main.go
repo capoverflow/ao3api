@@ -21,6 +21,9 @@ func Fanfic(WorkID, ChapterID string, debug bool, proxyURLs []string) (fanfic mo
 	// var fanfic ao3structs.Work
 
 	ChaptersIDs, status, err = scrapper.GetFirstChapterID(WorkID, ChapterID, proxyURLs, debug)
+	// if len(proxyURLs) != 0 {
+	// 	log.Println(proxyURLs)
+	// }
 	// log.Println("ChaptersIDs: , ChaptersIDs length:", ChaptersIDs, len(ChaptersIDs))
 	if status != 404 {
 		if len(ChaptersIDs) != 0 {
@@ -40,4 +43,9 @@ func Fanfic(WorkID, ChapterID string, debug bool, proxyURLs []string) (fanfic mo
 func Search(SearchString models.Search) {
 	scrapper.Search(SearchString)
 
+}
+
+func Users(Author string) (AuthorInfo models.User) {
+	AuthorInfo = scrapper.GetUsersInfo(Author)
+	return AuthorInfo
 }
