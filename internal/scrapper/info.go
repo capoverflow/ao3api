@@ -57,8 +57,8 @@ func GetInfo(WorkID string, ChaptersIDs []string, proxyURLs []string) models.Wor
 		}
 
 	})
-	c.OnHTML("div.preface.group", func(e *colly.HTMLElement) {
-		Fanfic.Title = e.ChildText("h2.title.heading")
+	c.OnHTML("h2.title.heading", func(e *colly.HTMLElement) {
+		Fanfic.Title = strings.TrimSpace(e.Text)
 		// Fanfic.Author = e.ChildText("h3.byline.heading")
 		// log.Println(e.ChildAttrs("a", "href"))
 	})
