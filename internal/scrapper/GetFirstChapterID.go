@@ -18,11 +18,9 @@ func GetFirstChapterID(WorkID, ChapterID string, proxyURLs []string, debug bool)
 	err = nil
 
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate?view_adult=true", WorkID)
-	// log.Printf("WorkID: %s, url %s", WorkID, url)
 	c := colly.NewCollector(
 		colly.CacheDir("./cache"),
 		colly.UserAgent(uarand.GetRandom()),
-		// colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"),
 		colly.AllowURLRevisit(),
 	)
 	c.Limit(&colly.LimitRule{
@@ -49,9 +47,7 @@ func GetFirstChapterID(WorkID, ChapterID string, proxyURLs []string, debug bool)
 		})
 	} else {
 		c.OnHTML("#signin", func(e *colly.HTMLElement) {
-			// err =
 			err = errors.New("require login")
-			// return ChaptersIDs, -1, err
 		})
 		c.OnHTML("#main > ol", func(e *colly.HTMLElement) {
 			hrefChaptersIDs := e.ChildAttrs("a", "href")
@@ -77,14 +73,10 @@ func GetFirstChapterID(WorkID, ChapterID string, proxyURLs []string, debug bool)
 	c.OnResponse(func(r *colly.Response) {
 		log.Println("response received", r.StatusCode)
 		StatusCode = r.StatusCode
-		fmt.Println(r.Ctx.Get("url"))
-
 	})
 	c.OnError(func(r *colly.Response, OnError error) {
-		// log.Println("error:", r.StatusCode, err)
 		err = errors.New(OnError.Error())
 		StatusCode = r.StatusCode
-
 	})
 
 	c.Visit(url)
