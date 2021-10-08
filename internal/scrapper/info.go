@@ -44,7 +44,6 @@ func GetInfo(WorkID string, ChaptersIDs []string, proxyURLs []string) models.Wor
 	}
 
 	c.OnHTML("dl.stats", func(e *colly.HTMLElement) {
-
 		Fanfic = models.Work{
 			Published: e.ChildText("dd.published"),
 			Updated:   e.ChildText("dd.status"),
@@ -55,77 +54,50 @@ func GetInfo(WorkID string, ChaptersIDs []string, proxyURLs []string) models.Wor
 			Bookmarks: e.ChildText("dd.bookmarks"),
 			Hits:      e.ChildText("dd.hits"),
 		}
-
 	})
 	c.OnHTML("h2.title.heading", func(e *colly.HTMLElement) {
 		Fanfic.Title = strings.TrimSpace(e.Text)
-		// Fanfic.Author = e.ChildText("h3.byline.heading")
-		// log.Println(e.ChildAttrs("a", "href"))
 	})
 
 	c.OnHTML("h3.byline.heading", func(e *colly.HTMLElement) {
-		// log.Println(e.ChildAttrs("a", "href"))
-		// log.Println(e.ChildText("a"))
-		// Fanfic.Author = e.ChildText("a")
+
 		e.ForEach("a", func(_ int, h *colly.HTMLElement) {
-			// log.Println(h.Text)
 			Fanfic.Author = append(Fanfic.Author, h.Text)
 		})
 	})
 
 	c.OnHTML("div.summary.module", func(e *colly.HTMLElement) {
 
-		var sum []string
-
 		e.ForEach("p", func(_ int, el *colly.HTMLElement) {
-			// txt := fmt.Sprintf("%s", el.Text)
-			txt := el.Text
-			sum = append(sum, txt)
+			Fanfic.Summary = append(Fanfic.Summary, el.Text)
 		})
-		Fanfic.Summary = sum
 
 	})
 
 	c.OnHTML("dd.fandom.tags", func(e *colly.HTMLElement) {
-		var fandoms []string
 		e.ForEach("a.tag", func(_ int, el *colly.HTMLElement) {
-			fandom := el.Text
-			fandoms = append(fandoms, fandom)
-
+			Fanfic.Fandom = append(Fanfic.Fandom, el.Text)
 		})
-		// log.Println(fandoms)
-		Fanfic.Fandom = fandoms
 	})
 	c.OnHTML("dd.relationship.tags", func(e *colly.HTMLElement) {
-		var relationships []string
 		e.ForEach("a.tag", func(_ int, el *colly.HTMLElement) {
-			relationship := el.Text
-			relationships = append(relationships, relationship)
+			Fanfic.Relationship = append(Fanfic.Relationship, el.Text)
 		})
-		Fanfic.Relationship = relationships
-
 	})
 
 	c.OnHTML("dd.freeform.tags", func(e *colly.HTMLElement) {
-		var AlternativeTags []string
 		e.ForEach("a.tag", func(_ int, el *colly.HTMLElement) {
 			if len(el.Text) != 0 {
-				AlternativeTag := el.Text
-				AlternativeTags = append(AlternativeTags, AlternativeTag)
+				Fanfic.AlternativeTags = append(Fanfic.AlternativeTags, el.Text)
 			}
 		})
-		Fanfic.AlternativeTags = AlternativeTags
-
 	})
 
 	c.OnHTML("li.download", func(e *colly.HTMLElement) {
 		e.ForEach("a", func(_ int, el *colly.HTMLElement) {
-			// log.Println(el.Attr("href"))
 			if !strings.Contains(el.Attr("href"), "#") {
 				Fanfic.Downloads = append(Fanfic.Downloads, fmt.Sprintf("https://download.archiveofourown.org%s", el.Attr("href")))
 			}
-			// log.Println(a)
-			// log.Printf("https://download.archiveofourown.org%s", el.Attr("href"))
 		})
 	})
 

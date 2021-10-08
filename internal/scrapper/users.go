@@ -29,25 +29,15 @@ func GetUsersInfo(Author string) (AuthorInfo models.User) {
 		// Add User Agent
 		Parallelism: 2,
 	})
-	// if len(proxyURLs) != 0 {
-	// 	rp, err := proxy.RoundRobinProxySwitcher(proxyURLs...)
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	c.SetProxyFunc(rp)
-	// }
 
 	c.OnHTML("dl.meta", func(e *colly.HTMLElement) {
-		// log.Println("Users")
-		// log.Println(e.DOM.Html())
+
 		AuthorInfo.Profile.Pseuds = e.ChildText("dd.pseuds")
 		AuthorInfo.Profile.JoinDate = e.ChildText("dd:nth-child(4)")
 		AuthorInfo.Profile.Email = e.ChildText("dd.email")
-		// log.Println(e.ChildText("dd.pseuds"))
 	})
 
 	c.OnHTML("div.bio.module", func(e *colly.HTMLElement) {
-		// log.Println(strings.TrimSpace(e.Text))
 		AuthorInfo.Profile.Bio = e.Text
 	})
 
@@ -81,7 +71,6 @@ func GetUsersInfo(Author string) (AuthorInfo models.User) {
 
 func GetUsersWorks(Author string) (AuthorInfo models.User) {
 	url := fmt.Sprintf("https://archiveofourown.org/users/%s/works", Author)
-	// log.Printf("WorkID: %s, url %s", WorkID, url)
 	c := colly.NewCollector(
 		colly.CacheDir("./cache"),
 		colly.UserAgent(uarand.GetRandom()),
