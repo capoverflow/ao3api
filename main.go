@@ -16,21 +16,21 @@ func init() {
 }
 
 // Parsing parse the fanfiction from ao3
-func Fanfic(WorkID, ChapterID string, debug bool, proxyURLs []string) (fanfic models.Work, status int, err error) {
+func Fanfic(Params models.FanficParams) (fanfic models.Work, status int, err error) {
 	var ChaptersIDs []string
 	// var fanfic ao3structs.Work
 
-	ChaptersIDs, status, err = scrapper.GetFirstChapterID(WorkID, ChapterID, proxyURLs, debug)
+	ChaptersIDs, status, err = scrapper.GetFirstChapterID(Params.WorkID, Params.ChapterID, Params.ProxyURLs, Params.Debug)
 	// if len(proxyURLs) != 0 {
 	// 	log.Println(proxyURLs)
 	// }
 	// log.Println("ChaptersIDs: , ChaptersIDs length:", ChaptersIDs, len(ChaptersIDs))
 	if status != 404 {
 		if len(ChaptersIDs) != 0 {
-			fanfic = scrapper.GetInfo(WorkID, ChaptersIDs, proxyURLs)
-			fanfic.WorkID = WorkID
-			fanfic.ChapterID = ChapterID
-			fanfic.URL = fmt.Sprintf("https://archiveofourown.org/works/%s", WorkID)
+			fanfic = scrapper.GetInfo(Params.WorkID, ChaptersIDs, Params.ProxyURLs)
+			fanfic.WorkID = Params.WorkID
+			fanfic.ChapterID = Params.ChapterID
+			fanfic.URL = fmt.Sprintf("https://archiveofourown.org/works/%s", Params.WorkID)
 		}
 	} else {
 		log.Println("status 404")

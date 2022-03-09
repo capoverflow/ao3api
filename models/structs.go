@@ -1,5 +1,12 @@
 package models
 
+type FanficParams struct {
+	WorkID    string
+	ChapterID string
+	Debug     bool
+	ProxyURLs []string
+}
+
 //Work ..
 type Work struct {
 	URL             string   `json:"URL,omitempty"`
