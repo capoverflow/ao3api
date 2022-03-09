@@ -49,3 +49,14 @@ func Users(Author string) (AuthorInfo models.User) {
 	AuthorInfo = scrapper.GetUsersInfo(Author)
 	return AuthorInfo
 }
+
+func UserBookmarks(Author string) (Bookmarks []string) {
+	log.Println(Author)
+
+	// Bookmarks = utils.RemoveDuplicateStr(scrapper.GetUserBookmarks(Author))
+	Bookmarks = scrapper.GetUserBookmarks(Author)
+
+	log.Println(len(Bookmarks))
+
+	return Bookmarks
+}

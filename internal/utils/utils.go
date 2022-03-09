@@ -1,8 +1,47 @@
 package utils
 
 import (
+	"log"
+	"regexp"
+	"sort"
+	"strconv"
 	"strings"
 )
+
+func FindUrl(urls []string) (max int) {
+	var err error
+	var nb []int
+	var tnb int
+	for _, url := range urls {
+		slash := strings.HasSuffix(url, "/")
+		if !slash {
+
+			splitPath := strings.Split(url, "/")
+			a := splitPath[len(splitPath)-1]
+			re := regexp.MustCompile(`bookmarks\?page=[0-9]+`)
+			// // 			log.Println(a)
+			z := re.FindAllString(a, -1)
+			// log.Println(z)
+			z = strings.Split(z[0], "=")
+			// log.Println(z[1])
+			tnb, err = strconv.Atoi(z[1])
+			nb = append(nb, tnb)
+			if err != nil {
+				log.Println(err)
+			}
+		}
+	}
+	if len(nb) == 0 {
+		return 0
+	} else {
+		return MaxIntSlice(nb)
+	}
+}
+
+func MaxIntSlice(v []int) int {
+	sort.Ints(v)
+	return v[len(v)-1]
+}
 
 //SliceFind search string in slice of string
 func SliceFind(slice []string, val string) (int, bool) {
@@ -69,4 +108,16 @@ func FindChaptersIDs(cIDs []string) []string {
 		ChaptersIDs = append(ChaptersIDs, tChap)
 	}
 	return ChaptersIDs
+}
+
+func RemoveDuplicateStr(strSlice []string) []string {
+	allKeys := make(map[string]bool)
+	list := []string{}
+	for _, item := range strSlice {
+		if _, value := allKeys[item]; !value {
+			allKeys[item] = true
+			list = append(list, item)
+		}
+	}
+	return list
 }

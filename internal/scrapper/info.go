@@ -28,7 +28,7 @@ func GetInfo(WorkID string, ChaptersIDs []string, proxyURLs []string) models.Wor
 		// Filter domains affected by this rule
 		DomainGlob: "*archiveofourown.org/*",
 		// Set a delay between requests to these domains
-		Delay: 5 * time.Second,
+		Delay: 15 * time.Second,
 		// Add an additional random delay
 		RandomDelay: 10 * time.Second,
 		// Add User Agent
@@ -36,6 +36,7 @@ func GetInfo(WorkID string, ChaptersIDs []string, proxyURLs []string) models.Wor
 	})
 
 	if len(proxyURLs) != 0 {
+		log.Println("using proxy")
 		rp, err := proxy.RoundRobinProxySwitcher(proxyURLs...)
 		if err != nil {
 			log.Fatal(err)

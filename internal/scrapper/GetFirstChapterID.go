@@ -6,11 +6,11 @@ import (
 	"log"
 	"time"
 
-	"gitlab.com/capoverflow/ao3api/internal/utils"
-
 	"github.com/corpix/uarand"
 	"github.com/gocolly/colly"
+	collyDebug "github.com/gocolly/colly/debug"
 	"github.com/gocolly/colly/proxy"
+	"gitlab.com/capoverflow/ao3api/internal/utils"
 )
 
 func GetFirstChapterID(WorkID, ChapterID string, proxyURLs []string, debug bool) (ChaptersIDs []string, StatusCode int, err error) {
@@ -18,22 +18,37 @@ func GetFirstChapterID(WorkID, ChapterID string, proxyURLs []string, debug bool)
 	err = nil
 
 	url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate?view_adult=true", WorkID)
-	c := colly.NewCollector(
-		colly.CacheDir("./cache"),
-		colly.UserAgent(uarand.GetRandom()),
-		colly.AllowURLRevisit(),
-	)
+	var c *colly.Collector
+
+	if debug {
+		c = colly.NewCollector(
+			colly.CacheDir("./cache"),
+			colly.UserAgent(uarand.GetRandom()),
+			colly.AllowURLRevisit(),
+			colly.Debugger(&collyDebug.LogDebugger{}),
+		)
+		log.Println("debug")
+
+	} else {
+		c = colly.NewCollector(
+			colly.CacheDir("./cache"),
+			colly.UserAgent(uarand.GetRandom()),
+			colly.AllowURLRevisit(),
+		)
+	}
+
 	c.Limit(&colly.LimitRule{
 		// Filter domains affected by this rule
 		DomainGlob: "*archiveofourown.org/*",
 		// Set a delay between requests to these domains
-		Delay: 5 * time.Second,
+		Delay: 15 * time.Second,
 		// Add an additional random delay
 		RandomDelay: 10 * time.Second,
 		// Add User Agent
 		Parallelism: 2,
 	})
 	if len(proxyURLs) != 0 {
+		log.Println("using proxy")
 		rp, err := proxy.RoundRobinProxySwitcher(proxyURLs...)
 		if err != nil {
 			log.Fatal(err)
@@ -42,8 +57,8 @@ func GetFirstChapterID(WorkID, ChapterID string, proxyURLs []string, debug bool)
 	}
 	if debug {
 		c.OnHTML("html", func(e *colly.HTMLElement) {
-			log.Println(e.Text)
-
+			// log.Println(e.Text)
+			_ = e.Text
 		})
 	} else {
 		c.OnHTML("#signin", func(e *colly.HTMLElement) {
@@ -55,12 +70,12 @@ func GetFirstChapterID(WorkID, ChapterID string, proxyURLs []string, debug bool)
 		})
 	}
 
-	c.OnRequest(func(r *colly.Request) {
-		if debug {
-			log.Println("visiting", r.URL.String())
-			log.Println(r.Headers)
-		}
-	})
+	// c.OnRequest(func(r *colly.Request) {
+	// 	if debug {
+	// 		log.Println("visiting", r.URL.String())
+	// 		log.Println(r.Headers)
+	// 	}
+	// })
 	c.OnScraped(func(r *colly.Response) { // DONE
 		if len(r.Body) == 0 {
 			log.Println(r.Request)
