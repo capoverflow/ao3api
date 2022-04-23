@@ -17,20 +17,26 @@ func init() {
 
 // Parsing parse the fanfiction from ao3
 func Fanfic(Params models.FanficParams) (fanfic models.Work, status int, err error) {
+	if len(Params.Addr) == 0 {
+		if Params.Debug {
+			log.Println("Debug: Setting default url")
+		}
+		Params.Addr = "archiveofourown.org"
+	}
+	if Params.Debug {
+		log.Printf("Debug:\n %v ", Params)
+	}
 	var ChaptersIDs []string
 	// var fanfic ao3structs.Work
 
-	ChaptersIDs, status, err = scrapper.GetFirstChapterID(Params.WorkID, Params.ChapterID, Params.ProxyURLs, Params.Debug)
-	// if len(proxyURLs) != 0 {
-	// 	log.Println(proxyURLs)
-	// }
-	// log.Println("ChaptersIDs: , ChaptersIDs length:", ChaptersIDs, len(ChaptersIDs))
+	ChaptersIDs, status, err = scrapper.GetFirstChapterID(Params)
+
 	if status != 404 {
 		if len(ChaptersIDs) != 0 {
-			fanfic = scrapper.GetInfo(Params.WorkID, ChaptersIDs, Params.ProxyURLs)
+			fanfic = scrapper.GetInfo(Params, ChaptersIDs)
 			fanfic.WorkID = Params.WorkID
 			fanfic.ChapterID = Params.ChapterID
-			fanfic.URL = fmt.Sprintf("https://archiveofourown.org/works/%s", Params.WorkID)
+			fanfic.URL = fmt.Sprintf("http://%s/works/%s", Params.Addr, Params.WorkID)
 		}
 	} else {
 		log.Println("status 404")
@@ -45,8 +51,18 @@ func Search(SearchString models.Search) {
 
 }
 
-func Users(Author string) (AuthorInfo models.User) {
-	AuthorInfo = scrapper.GetUsersInfo(Author)
+func Users(Params models.UserParams) (AuthorInfo models.User) {
+	if len(Params.Addr) == 0 {
+		if Params.Debug {
+			log.Println("Debug: Setting default url")
+		}
+		Params.Addr = "archiveofourown.org"
+	}
+	if Params.Debug {
+		log.Printf("Debug:\n %v ", Params)
+	}
+
+	AuthorInfo = scrapper.GetUsersInfo(Params)
 	return AuthorInfo
 }
 

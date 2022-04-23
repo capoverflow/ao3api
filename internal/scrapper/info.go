@@ -14,10 +14,10 @@ import (
 	"github.com/corpix/uarand"
 )
 
-func GetInfo(WorkID string, ChaptersIDs []string, proxyURLs []string) models.Work {
+func GetInfo(Params models.FanficParams, ChaptersIDs []string) models.Work {
 	var Fanfic models.Work
 	Fanfic.ChaptersIDs = ChaptersIDs
-	Fanfic.URL = fmt.Sprintf("https://archiveofourown.org/works/%s/chapters/%s?view_adult=true", WorkID, Fanfic.ChaptersIDs[0])
+	Fanfic.URL = fmt.Sprintf("http://%s/works/%s/chapters/%s?view_adult=true", Params.Addr, Params.WorkID, Fanfic.ChaptersIDs[0])
 	c := colly.NewCollector(
 		colly.CacheDir("./cache"),
 		// colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"),
@@ -26,7 +26,7 @@ func GetInfo(WorkID string, ChaptersIDs []string, proxyURLs []string) models.Wor
 	)
 	c.Limit(&colly.LimitRule{
 		// Filter domains affected by this rule
-		DomainGlob: "*archiveofourown.org/*",
+		// DomainGlob: "*archiveofourown.org/*",
 		// Set a delay between requests to these domains
 		Delay: 15 * time.Second,
 		// Add an additional random delay
@@ -35,9 +35,9 @@ func GetInfo(WorkID string, ChaptersIDs []string, proxyURLs []string) models.Wor
 		Parallelism: 2,
 	})
 
-	if len(proxyURLs) != 0 {
+	if len(Params.ProxyURLs) != 0 {
 		log.Println("using proxy")
-		rp, err := proxy.RoundRobinProxySwitcher(proxyURLs...)
+		rp, err := proxy.RoundRobinProxySwitcher(Params.ProxyURLs...)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -94,10 +94,29 @@ func GetInfo(WorkID string, ChaptersIDs []string, proxyURLs []string) models.Wor
 		})
 	})
 
+	// ao3api: 2022/04/23 02:45:35 info.go:102: https://download.archiveofourown.org/downloads/33638854/Trial%20and%20Error.azw3?updated_at=1650665615 <nil>
+	// ao3api: 2022/04/23 02:45:35 info.go:102: https://download.archiveofourown.org/downloads/33638854/Trial%20and%20Error.epub?updated_at=1650665615 <nil>
+	// ao3api: 2022/04/23 02:45:35 info.go:102: https://download.archiveofourown.org/downloads/33638854/Trial%20and%20Error.mobi?updated_at=1650665615 <nil>
+	// ao3api: 2022/04/23 02:45:35 info.go:102: https://download.archiveofourown.org/downloads/33638854/Trial%20and%20Error.pdf?updated_at=1650665615 <nil>
+	// ao3api: 2022/04/23 02:45:35 info.go:102: https://download.archiveofourown.org/downloads/33638854/Trial%20and%20Error.html?updated_at=1650665615 <nil>
+
 	c.OnHTML("li.download", func(e *colly.HTMLElement) {
 		e.ForEach("a", func(_ int, el *colly.HTMLElement) {
 			if !strings.Contains(el.Attr("href"), "#") {
-				Fanfic.Downloads = append(Fanfic.Downloads, fmt.Sprintf("https://download.archiveofourown.org%s", el.Attr("href")))
+				href := fmt.Sprintf("https://download.archiveofourown.org%s", el.Attr("href"))
+
+				FileType := []string{"azw3", "epub", "mobi", "pdf", "html"}
+				for _, ft := range FileType {
+					switch {
+					case strings.Contains(href, ft):
+						download := models.Downloads{
+							FileType: ft,
+							Url:      href,
+						}
+						Fanfic.Downloads = append(Fanfic.Downloads, download)
+					}
+				}
+
 			}
 		})
 	})

@@ -11,16 +11,17 @@ import (
 	collyDebug "github.com/gocolly/colly/debug"
 	"github.com/gocolly/colly/proxy"
 	"gitlab.com/capoverflow/ao3api/internal/utils"
+	"gitlab.com/capoverflow/ao3api/models"
 )
 
-func GetFirstChapterID(WorkID, ChapterID string, proxyURLs []string, debug bool) (ChaptersIDs []string, StatusCode int, err error) {
+func GetFirstChapterID(Params models.FanficParams) (ChaptersIDs []string, StatusCode int, err error) {
 	ChaptersIDs = []string{}
 	err = nil
 
-	url := fmt.Sprintf("https://archiveofourown.org/works/%s/navigate?view_adult=true", WorkID)
+	url := fmt.Sprintf("http://%s/works/%s/navigate?view_adult=true", Params.Addr, Params.WorkID)
 	var c *colly.Collector
 
-	if debug {
+	if Params.Debug {
 		c = colly.NewCollector(
 			colly.CacheDir("./cache"),
 			colly.UserAgent(uarand.GetRandom()),
@@ -39,7 +40,7 @@ func GetFirstChapterID(WorkID, ChapterID string, proxyURLs []string, debug bool)
 
 	c.Limit(&colly.LimitRule{
 		// Filter domains affected by this rule
-		DomainGlob: "*archiveofourown.org/*",
+		// DomainGlob: "*archiveofourown.org/*",
 		// Set a delay between requests to these domains
 		Delay: 15 * time.Second,
 		// Add an additional random delay
@@ -47,28 +48,23 @@ func GetFirstChapterID(WorkID, ChapterID string, proxyURLs []string, debug bool)
 		// Add User Agent
 		Parallelism: 2,
 	})
-	if len(proxyURLs) != 0 {
+	if len(Params.ProxyURLs) != 0 {
 		log.Println("using proxy")
-		rp, err := proxy.RoundRobinProxySwitcher(proxyURLs...)
+		rp, err := proxy.RoundRobinProxySwitcher(Params.ProxyURLs...)
 		if err != nil {
 			log.Fatal(err)
 		}
 		c.SetProxyFunc(rp)
 	}
-	if debug {
-		c.OnHTML("html", func(e *colly.HTMLElement) {
-			// log.Println(e.Text)
-			_ = e.Text
-		})
-	} else {
-		c.OnHTML("#signin", func(e *colly.HTMLElement) {
-			err = errors.New("require login")
-		})
-		c.OnHTML("#main > ol", func(e *colly.HTMLElement) {
-			hrefChaptersIDs := e.ChildAttrs("a", "href")
-			ChaptersIDs = utils.FindChaptersIDs(hrefChaptersIDs)
-		})
-	}
+
+	c.OnHTML("#signin", func(e *colly.HTMLElement) {
+		err = errors.New("require login")
+	})
+	c.OnHTML("#main > ol", func(e *colly.HTMLElement) {
+		hrefChaptersIDs := e.ChildAttrs("a", "href")
+		ChaptersIDs = utils.FindChaptersIDs(hrefChaptersIDs)
+
+	})
 
 	// c.OnRequest(func(r *colly.Request) {
 	// 	if debug {

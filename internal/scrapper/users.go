@@ -16,8 +16,8 @@ import (
 	"gitlab.com/capoverflow/ao3api/models"
 )
 
-func GetUsersInfo(Author string) (AuthorInfo models.User) {
-	url := fmt.Sprintf("https://archiveofourown.org/users/%s/profile", Author)
+func GetUsersInfo(User models.UserParams) (AuthorInfo models.User) {
+	url := fmt.Sprintf("http://%s/users/%s/profile", User.Addr, User.Username)
 	// log.Printf("WorkID: %s, url %s", WorkID, url)
 	c := colly.NewCollector(
 		colly.CacheDir("./cache"),
@@ -27,7 +27,7 @@ func GetUsersInfo(Author string) (AuthorInfo models.User) {
 	)
 	c.Limit(&colly.LimitRule{
 		// Filter domains affected by this rule
-		DomainGlob: "*archiveofourown.org/*",
+		// DomainGlob: "*archiveofourown.org/*",
 		// Set a delay between requests to these domains
 		Delay: 5 * time.Second,
 		// Add an additional random delay
