@@ -5,7 +5,7 @@
 ```bash
 cd ~/go/src
 go mod init .
-go mod edit -require gitlab.com/capoverflow/ao3api@develop
+go mod edit -require github.com/capoverflow/ao3api@develop
 go get -v -t ./...
 
 ```
