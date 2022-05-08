@@ -6,8 +6,8 @@ import (
 	"log"
 	"time"
 
-	"ao3api/internal/utils"
-	"ao3api/models"
+	"github.com/capoverflow/ao3api/internal/utils"
+	"github.com/capoverflow/ao3api/models"
 
 	"github.com/corpix/uarand"
 	"github.com/gocolly/colly"

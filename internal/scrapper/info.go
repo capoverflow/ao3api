@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"ao3api/models"
+	"github.com/capoverflow/ao3api/models"
 
 	"github.com/gocolly/colly"
 	"github.com/gocolly/colly/proxy"
@@ -94,11 +94,11 @@ func GetInfo(Params models.FanficParams, ChaptersIDs []string) models.Work {
 		})
 	})
 
-	// ao3api: 2022/04/23 02:45:35 info.go:102: https://download.archiveofourown.org/downloads/33638854/Trial%20and%20Error.azw3?updated_at=1650665615 <nil>
-	// ao3api: 2022/04/23 02:45:35 info.go:102: https://download.archiveofourown.org/downloads/33638854/Trial%20and%20Error.epub?updated_at=1650665615 <nil>
-	// ao3api: 2022/04/23 02:45:35 info.go:102: https://download.archiveofourown.org/downloads/33638854/Trial%20and%20Error.mobi?updated_at=1650665615 <nil>
-	// ao3api: 2022/04/23 02:45:35 info.go:102: https://download.archiveofourown.org/downloads/33638854/Trial%20and%20Error.pdf?updated_at=1650665615 <nil>
-	// ao3api: 2022/04/23 02:45:35 info.go:102: https://download.archiveofourown.org/downloads/33638854/Trial%20and%20Error.html?updated_at=1650665615 <nil>
+	// github.com/capoverflow/ao3api: 2022/04/23 02:45:35 info.go:102: https://download.archiveofourown.org/downloads/33638854/Trial%20and%20Error.azw3?updated_at=1650665615 <nil>
+	// github.com/capoverflow/ao3api: 2022/04/23 02:45:35 info.go:102: https://download.archiveofourown.org/downloads/33638854/Trial%20and%20Error.epub?updated_at=1650665615 <nil>
+	// github.com/capoverflow/ao3api: 2022/04/23 02:45:35 info.go:102: https://download.archiveofourown.org/downloads/33638854/Trial%20and%20Error.mobi?updated_at=1650665615 <nil>
+	// github.com/capoverflow/ao3api: 2022/04/23 02:45:35 info.go:102: https://download.archiveofourown.org/downloads/33638854/Trial%20and%20Error.pdf?updated_at=1650665615 <nil>
+	// github.com/capoverflow/ao3api: 2022/04/23 02:45:35 info.go:102: https://download.archiveofourown.org/downloads/33638854/Trial%20and%20Error.html?updated_at=1650665615 <nil>
 
 	c.OnHTML("li.download", func(e *colly.HTMLElement) {
 		e.ForEach("a", func(_ int, el *colly.HTMLElement) {
