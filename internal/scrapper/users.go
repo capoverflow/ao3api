@@ -8,12 +8,13 @@ import (
 	"strings"
 	"time"
 
+	"ao3api/internal/utils"
+	"ao3api/models"
+
 	"github.com/PuerkitoBio/goquery"
 	"github.com/corpix/uarand"
 	"github.com/gocolly/colly"
 	"github.com/gocolly/colly/queue"
-	"gitlab.com/capoverflow/ao3api/internal/utils"
-	"gitlab.com/capoverflow/ao3api/models"
 )
 
 func GetUsersInfo(User models.UserParams) (AuthorInfo models.User) {

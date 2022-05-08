@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"gitlab.com/capoverflow/ao3api/models"
+	"ao3api/models"
 
 	"github.com/gocolly/colly"
 	"github.com/gocolly/colly/proxy"

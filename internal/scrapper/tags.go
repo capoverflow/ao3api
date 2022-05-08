@@ -5,9 +5,10 @@ import (
 	"net/url"
 	"time"
 
+	"ao3api/models"
+
 	"github.com/corpix/uarand"
 	"github.com/gocolly/colly"
-	"gitlab.com/capoverflow/ao3api/models"
 )
 
 func Search(SearchString models.Search) {

@@ -5,8 +5,8 @@ import (
 	"log"
 	"os"
 
-	"gitlab.com/capoverflow/ao3api/internal/scrapper"
-	"gitlab.com/capoverflow/ao3api/models"
+	"ao3api/internal/scrapper"
+	"ao3api/models"
 )
 
 func init() {

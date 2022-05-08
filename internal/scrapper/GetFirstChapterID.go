@@ -6,12 +6,13 @@ import (
 	"log"
 	"time"
 
+	"ao3api/internal/utils"
+	"ao3api/models"
+
 	"github.com/corpix/uarand"
 	"github.com/gocolly/colly"
 	collyDebug "github.com/gocolly/colly/debug"
 	"github.com/gocolly/colly/proxy"
-	"gitlab.com/capoverflow/ao3api/internal/utils"
-	"gitlab.com/capoverflow/ao3api/models"
 )
 
 func GetFirstChapterID(Params models.FanficParams) (ChaptersIDs []string, StatusCode int, err error) {
