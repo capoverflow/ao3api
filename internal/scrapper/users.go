@@ -134,8 +134,8 @@ func GetUsersWorks(Author string) (AuthorInfo models.User) {
 	return AuthorInfo
 }
 
-func GetUserBookmarksPage(Author string) (PageNB int) {
-	u, err := url.Parse(fmt.Sprintf("https://archiveofourown.org/users/%s/bookmarks", Author))
+func GetUserBookmarksPage(Params models.UserParams) (PageNB int) {
+	u, err := url.Parse(fmt.Sprintf("https://%s/users/%s/bookmarks", Params.Addr, Params.Username))
 
 	if err != nil {
 		log.Println(err)
@@ -200,8 +200,8 @@ func GetUserBookmarksPage(Author string) (PageNB int) {
 	return PageNB
 }
 
-func GetUserBookmarks(Author string) (Bookmarks []string) {
-	u, err := url.Parse(fmt.Sprintf("https://archiveofourown.org/users/%s/bookmarks", Author))
+func GetUserBookmarks(Params models.UserParams) (Bookmarks []string) {
+	u, err := url.Parse(fmt.Sprintf("https://%s/users/%s/bookmarks", Params.Addr, Params.Username))
 
 	if err != nil {
 		log.Println(err)
@@ -224,7 +224,7 @@ func GetUserBookmarks(Author string) (Bookmarks []string) {
 		Parallelism: 2,
 	})
 
-	PageNB := GetUserBookmarksPage(Author)
+	PageNB := GetUserBookmarksPage(Params)
 	log.Println(PageNB)
 
 	if PageNB == 0 {

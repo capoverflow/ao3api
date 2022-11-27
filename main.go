@@ -1,4 +1,4 @@
-package ao3
+package ao3api
 
 import (
 	"fmt"
@@ -45,7 +45,7 @@ func Fanfic(Params models.FanficParams) (fanfic models.Work, status int, err err
 	return fanfic, status, err
 }
 
-//Tags
+// Tags
 func Search(SearchString models.Search) {
 	scrapper.Search(SearchString)
 
@@ -66,11 +66,19 @@ func Users(Params models.UserParams) (AuthorInfo models.User) {
 	return AuthorInfo
 }
 
-func UserBookmarks(Author string) (Bookmarks []string) {
-	log.Println(Author)
+func UserBookmarks(Params models.UserParams) (Bookmarks []string) {
 
-	// Bookmarks = utils.RemoveDuplicateStr(scrapper.GetUserBookmarks(Author))
-	Bookmarks = scrapper.GetUserBookmarks(Author)
+	if len(Params.Addr) == 0 {
+		if Params.Debug {
+			log.Println("Debug: Setting default url")
+		}
+		Params.Addr = "archiveofourown.org"
+	}
+	if Params.Debug {
+		log.Printf("Debug:\n %v ", Params)
+	}
+
+	Bookmarks = scrapper.GetUserBookmarks(Params)
 
 	log.Println(len(Bookmarks))
 
