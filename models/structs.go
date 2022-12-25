@@ -8,7 +8,7 @@ type FanficParams struct {
 	ProxyURLs []string
 }
 
-//Work ..
+// Work ..
 type Work struct {
 	URL             string      `json:"URL,omitempty"`
 	WorkID          string      `json:"WorkID,omitempty"`
@@ -25,6 +25,7 @@ type Work struct {
 	Bookmarks       string      `json:"Bookmarks,omitempty"`
 	Hits            string      `json:"Hits,omitempty"`
 	Fandom          []string    `json:"Fandom,omitempty"`
+	Series          []string    `json:"Series,omitempty"`
 	Summary         []string    `json:"Summary,omitempty"`
 	ChaptersTitles  []string    `json:"ChaptersTitles,omitempty"`
 	ChaptersIDs     []string    `json:"ChaptersIDs,omitempty"`
@@ -38,7 +39,7 @@ type Downloads struct {
 	Url      string
 }
 
-//FanficID
+// FanficID
 type FanficID struct {
 	WorkID    string
 	ChapterID string
@@ -64,6 +65,7 @@ type Search struct {
 type UserParams struct {
 	Addr      string
 	Username  string
+	Pseuds    string
 	Debug     bool
 	ProxyURLs []string
 }

@@ -67,12 +67,12 @@ func GetFirstChapterID(Params models.FanficParams) (ChaptersIDs []string, Status
 
 	})
 
-	// c.OnRequest(func(r *colly.Request) {
-	// 	if debug {
-	// 		log.Println("visiting", r.URL.String())
-	// 		log.Println(r.Headers)
-	// 	}
-	// })
+	c.OnRequest(func(r *colly.Request) {
+
+		log.Println("visiting", r.URL.String())
+		log.Println(r.Headers)
+
+	})
 	c.OnScraped(func(r *colly.Response) { // DONE
 		if len(r.Body) == 0 {
 			log.Println(r.Request)
@@ -82,8 +82,24 @@ func GetFirstChapterID(Params models.FanficParams) (ChaptersIDs []string, Status
 	})
 
 	// extract status code
+
 	c.OnResponse(func(r *colly.Response) {
+		log.Println("-----------------------------")
+
 		log.Println("response received", r.StatusCode)
+
+		if r.StatusCode == 429 {
+
+			for key, value := range *r.Headers {
+				log.Printf("%s: %s\n", key, value)
+				// retry-after
+			}
+		}
+
+		// for key, value := range *r.Headers {
+		// 	log.Printf("%s: %s\n", key, value)
+		// }
+
 		StatusCode = r.StatusCode
 	})
 	c.OnError(func(r *colly.Response, OnError error) {

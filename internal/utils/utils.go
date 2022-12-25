@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"log"
 	"regexp"
 	"sort"
@@ -8,7 +9,7 @@ import (
 	"strings"
 )
 
-func FindUrl(urls []string) (max int) {
+func FindUrl(PageType string, urls []string) (max int) {
 	var err error
 	var nb []int
 	var tnb int
@@ -18,7 +19,7 @@ func FindUrl(urls []string) (max int) {
 
 			splitPath := strings.Split(url, "/")
 			a := splitPath[len(splitPath)-1]
-			re := regexp.MustCompile(`bookmarks\?page=[0-9]+`)
+			re := regexp.MustCompile(fmt.Sprintf(`%s\?page=[0-9]+`, PageType))
 			// // 			log.Println(a)
 			z := re.FindAllString(a, -1)
 			// log.Println(z)
@@ -43,7 +44,7 @@ func MaxIntSlice(v []int) int {
 	return v[len(v)-1]
 }
 
-//SliceFind search string in slice of string
+// SliceFind search string in slice of string
 func SliceFind(slice []string, val string) (int, bool) {
 	for i, item := range slice {
 
@@ -54,7 +55,7 @@ func SliceFind(slice []string, val string) (int, bool) {
 	return -1, false
 }
 
-//SliceIndex Get position of element in slice
+// SliceIndex Get position of element in slice
 func SliceIndex(limit int, predicate func(i int) bool) int {
 	for i := 0; i < limit; i++ {
 		if predicate(i) {
@@ -108,6 +109,26 @@ func FindChaptersIDs(cIDs []string) []string {
 		ChaptersIDs = append(ChaptersIDs, tChap)
 	}
 	return ChaptersIDs
+}
+
+func RemoveDuplicates(strings []string) []string {
+	// Create a map to store unique strings
+	uniqueStrings := make(map[string]bool)
+
+	// Iterate through the slice and add each string to the map
+	for _, s := range strings {
+		uniqueStrings[s] = true
+	}
+
+	// Create a slice to store the unique strings
+	result := make([]string, 0, len(uniqueStrings))
+
+	// Iterate through the map and add the keys (strings) to the slice
+	for s := range uniqueStrings {
+		result = append(result, s)
+	}
+
+	return result
 }
 
 func RemoveDuplicateStr(strSlice []string) []string {

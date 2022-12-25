@@ -92,6 +92,15 @@ func GetInfo(Params models.FanficParams, ChaptersIDs []string) models.Work {
 				Fanfic.AlternativeTags = append(Fanfic.AlternativeTags, el.Text)
 			}
 		})
+
+	})
+
+	c.OnHTML("dd.series", func(e *colly.HTMLElement) {
+		// log.Println(e.DOM.Html())
+		e.ForEach("span.position", func(_ int, el *colly.HTMLElement) {
+			// log.Println(el.DOM.Html())
+			Fanfic.Series = append(Fanfic.Series, el.ChildText("a"))
+		})
 	})
 
 	// github.com/capoverflow/ao3api: 2022/04/23 02:45:35 info.go:102: https://download.archiveofourown.org/downloads/33638854/Trial%20and%20Error.azw3?updated_at=1650665615 <nil>
@@ -123,7 +132,18 @@ func GetInfo(Params models.FanficParams, ChaptersIDs []string) models.Work {
 
 	c.Visit(Fanfic.URL)
 	c.OnResponse(func(r *colly.Response) {
+		log.Println("-----------------------------")
+
 		log.Println("response received", r.StatusCode)
+
+		if r.StatusCode == 429 {
+
+			for key, value := range *r.Headers {
+				log.Printf("%s: %s\n", key, value)
+				// retry-after
+			}
+		}
+		// StatusCode = r.StatusCode
 	})
 	c.OnError(func(r *colly.Response, err error) {
 		log.Println("error:", r.StatusCode, err)
