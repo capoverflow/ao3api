@@ -1,7 +1,7 @@
 package fanfic
 
 import (
-	"ao3api/internals/models"
+	"ao3api/models"
 	"fmt"
 	"log"
 	"strings"

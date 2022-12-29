@@ -1,4 +1,4 @@
-module ao3api
+module github.com/capoverflow/ao3api
 
 go 1.19
 
