@@ -30,6 +30,15 @@ type Fanfic struct {
 	ChaptersIDs     []string    `json:"ChaptersIDs,omitempty"`
 	Relationship    []string    `json:"Relationship,omitempty"`
 	AlternativeTags []string    `json:"AlternativeTags,omitempty"`
+	Freeform        []string    `json:"Freeform,omitempty"`
+	Rating          []string    `json:"Rating,omitempty"`
+	Character       []string    `json:"Character,omitempty"`
+	Warning         []string    `json:"Warning,omitempty"`
+	Category        []string    `json:"Category,omitempty"`
+	Language        []string    `json:"Language,omitempty"`
+	Additional      []string    `json:"Additional,omitempty"`
+	Collection      []string    `json:"Collection,omitempty"`
+	Challenge       []string    `json:"Challenge,omitempty"`
 	Downloads       []Downloads `json:"Downloads,omitempty"`
 	Status          string      `json:"Status,omitempty"`
 }

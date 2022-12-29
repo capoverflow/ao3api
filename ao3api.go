@@ -1,8 +1,19 @@
 package ao3api
 
-import "github.com/capoverflow/ao3api/models"
+import (
+	"fmt"
 
-func Fanfic(params models.FanficParams) (fanfic models.Fanfic, err error) {
+	"github.com/capoverflow/ao3api/internals/fanfic"
+	"github.com/capoverflow/ao3api/models"
+)
 
-	return fanfic, nil
+func Fanfic(params models.FanficParams) (works models.Fanfic, err error) {
+	fmt.Println(params)
+
+	works, err = fanfic.GetInfo(params)
+	if err != nil {
+		return models.Fanfic{}, nil
+	}
+
+	return works, nil
 }
