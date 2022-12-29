@@ -3,8 +3,6 @@ module github.com/capoverflow/ao3api
 go 1.19
 
 
-retract [v1.0.0, v1.9.9]
-
 require (
 	github.com/corpix/uarand v0.2.0
 	github.com/gocolly/colly v1.2.0
