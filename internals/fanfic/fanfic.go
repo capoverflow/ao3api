@@ -1,12 +1,12 @@
 package fanfic
 
 import (
-	"ao3api/models"
 	"fmt"
 	"log"
 	"strings"
 	"time"
 
+	"github.com/capoverflow/ao3api/models"
 	"github.com/corpix/uarand"
 	"github.com/gocolly/colly"
 	"github.com/gocolly/colly/proxy"
