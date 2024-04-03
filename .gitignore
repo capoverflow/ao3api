@@ -1,0 +1,7 @@
+tmp/*
+cache/*
+*.html
+*.json
+*.txt
+*.py
+*.old
